@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦆 Drunken Duck Cantina — Menu Master</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --gold: #D4950A;
+    --amber: #B87D0A;
+    --rust: #8B3A0F;
+    --lime: #5A7A2E;
+    --salt: #F5EDD8;
+    --charcoal: #1C1A17;
+    --smoke: #252219;
+    --panel: #2C2820;
+    --border: #3D3828;
+    --cream: #F0E8D5;
+    --muted: #9E9078;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--charcoal); color: var(--cream); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  header {
+    background: var(--smoke);
+    border-bottom: 2px solid var(--gold);
+    padding: 14px 16px 10px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem,5vw,1.8rem); color: var(--gold); }
+  header p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  .tabs {
+    display: flex; gap: 6px; padding: 12px 14px;
+    overflow-x: auto; scrollbar-width: none;
+    background: var(--smoke); border-bottom: 1px solid var(--border);
+    position: sticky; top: 60px; z-index: 99;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 18px; padding: 6px 14px;
+    font-size: 0.76rem; font-weight: 600; cursor: pointer;
+    white-space: nowrap; color: var(--muted);
+    transition: all 0.18s; flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { background: var(--gold); border-color: var(--gold); color: var(--charcoal); }
+
+  .section { display: none; padding: 14px; max-width: 600px; margin: 0 auto; }
+  .section.visible { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  }
+  .badge {
+    display: inline-block; background: rgba(212,149,10,0.15);
+    border: 1px solid rgba(212,149,10,0.3); border-radius: 20px;
+    padding: 2px 10px; font-size: 0.68rem; color: var(--gold);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
+  }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); margin-bottom: 4px; }
+  .card-sub { font-size: 0.76rem; color: var(--muted); font-style: italic; margin-bottom: 8px; }
+  .card-desc { font-size: 0.86rem; color: #D0C8B4; line-height: 1.55; }
+
+  .ingredients { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .ingredients h4 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+  .ing { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #2A2620; font-size: 0.83rem; }
+  .ing:last-child { border-bottom: none; }
+  .ing-name { color: #D0C8B4; }
+  .ing-qty { color: var(--gold); font-weight: 600; font-size: 0.78rem; }
+
+  .steps { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .steps h4 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; }
+  .step { display: flex; gap: 10px; margin-bottom: 7px; align-items: flex-start; }
+  .step-n {
+    background: var(--gold); color: var(--charcoal);
+    font-weight: 700; font-size: 0.68rem;
+    min-width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-t { font-size: 0.84rem; color: #D0C8B4; line-height: 1.4; }
+
+  .mnemonic {
+    background: rgba(212,149,10,0.1); border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0; padding: 9px 12px; margin-top: 12px;
+    font-size: 0.81rem; color: #E8C97A; line-height: 1.5;
+  }
+  .mnemonic strong { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 3px; }
+
+  .tip { background: rgba(90,122,46,0.12); border: 1px solid rgba(90,122,46,0.3); border-radius: 8px; padding: 9px 12px; margin-top: 10px; font-size: 0.81rem; color: #A8D070; line-height: 1.5; }
+  .tip strong { color: #C0E890; }
+
+  .speak-btn {
+    background: none; border: 1px solid var(--gold); border-radius: 16px;
+    padding: 4px 12px; color: var(--gold); font-size: 0.72rem;
+    cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* FLASHCARDS */
+  .fc-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .fc-nav button {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 18px; color: #C0B89A;
+    cursor: pointer; font-size: 0.84rem; font-family: 'DM Sans', sans-serif;
+  }
+  .fc-counter { font-size: 0.8rem; color: var(--muted); }
+  .fc-wrap { perspective: 1000px; cursor: pointer; margin-bottom: 12px; }
+  .fc {
+    position: relative; height: 220px;
+    transform-style: preserve-3d; transition: transform 0.45s;
+    border-radius: 12px;
+  }
+  .fc.flipped { transform: rotateY(180deg); }
+  .fc-front, .fc-back {
+    position: absolute; inset: 0; border-radius: 12px;
+    backface-visibility: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; text-align: center;
+  }
+  .fc-front { background: var(--panel); border: 1px solid var(--border); }
+  .fc-back { background: rgba(212,149,10,0.08); border: 1px solid var(--gold); transform: rotateY(180deg); }
+  .fc-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+  .fc-q { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--cream); }
+  .fc-tap { font-size: 0.68rem; color: #5A5040; margin-top: 8px; }
+  .fc-a { font-size: 0.88rem; color: #E8C97A; line-height: 1.55; }
+  .shuffle-btn {
+    width: 100%; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px; color: #C0B89A;
+    font-size: 0.86rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  }
+
+  /* QUIZ */
+  .quiz-meta { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.8rem; color: var(--muted); }
+  .quiz-val { color: var(--gold); font-weight: 700; font-size: 0.95rem; }
+  .quiz-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px 18px; }
+  .quiz-q { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream); margin-bottom: 6px; line-height: 1.35; text-align: center; }
+  .quiz-hint { font-size: 0.75rem; color: var(--muted); font-style: italic; text-align: center; margin-bottom: 18px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 9px; }
+  .quiz-opt {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 9px; padding: 11px 14px; font-size: 0.88rem;
+    cursor: pointer; color: #D0C8B4; text-align: left;
+    transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .quiz-opt:hover { border-color: var(--gold); }
+  .quiz-opt.correct { background: rgba(90,122,46,0.2); border-color: #5A7A2E; color: #A8D070; }
+  .quiz-opt.wrong { background: rgba(139,58,15,0.2); border-color: var(--rust); color: #E08070; }
+  .quiz-opt.reveal { background: rgba(212,149,10,0.12); border-color: var(--gold); }
+  .action-btn {
+    width: 100%; background: var(--gold); border: none; border-radius: 10px;
+    padding: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    margin-top: 12px; color: var(--charcoal); font-family: 'DM Sans', sans-serif;
+  }
+  .reset-btn {
+    width: 100%; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px; font-size: 0.86rem; cursor: pointer;
+    margin-top: 8px; color: var(--muted); font-family: 'DM Sans', sans-serif;
+  }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .section-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin: 18px 0 10px; padding-left: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦆 Drunken Duck Cantina</h1>
+  <p>Nuevo Vallarta · Learn the menu fast</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('food',this)">🍽️ Food</div>
+  <div class="tab" onclick="showTab('cocktails',this)">🍹 Cocktails</div>
+  <div class="tab" onclick="showTab('drinks',this)">🍺 Drinks</div>
+  <div class="tab" onclick="showTab('flashcards',this)">🃏 Flashcards</div>
+  <div class="tab" onclick="showTab('quiz',this)">🎯 Quiz</div>
+</div>
+
+<!-- ========== FOOD ========== -->
+<div id="tab-food" class="section visible">
+
+  <div class="section-label">🧺 Starters & Sides</div>
+
+  <div class="card">
+    <div class="badge">Side</div>
+    <div class="card-title">🍟 French Fries</div>
+    <div class="card-desc">220g crispy fries, salt & pepper. Simple and classic.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"220 naked fries" — plain, nothing added.</div>
+    <button class="speak-btn" onclick="speak('French Fries. Two hundred twenty grams, crispy, salt and pepper.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Side</div>
+    <div class="card-title">🧀 Loaded Fries</div>
+    <div class="card-desc">220g fries + 100g melted cheese + 50g bacon + chives.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"220 base, 100 cheese, 50 bacon." Cheese is always double the bacon weight.</div>
+    <button class="speak-btn" onclick="speak('Loaded Fries. Two twenty fries, one hundred cheese, fifty bacon, chives.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter</div>
+    <div class="card-title">🍋 Tempura Onion Rings</div>
+    <div class="card-desc">Onion rings in a light, extra-crispy tempura batter. Golden fried, tender inside.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Golden rings in Japanese armour." Tempura = ultra-light crispy batter from Japan.</div>
+    <button class="speak-btn" onclick="speak('Tempura Onion Rings. Extra crispy light tempura batter, golden fried, tender inside.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter</div>
+    <div class="card-title">🦐 Tempura Shrimp</div>
+    <div class="card-desc">250g tender shrimp fried in signature light crispy tempura batter. Perfect shareable starter.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"250 shrimp in armour." Same tempura batter as the rings — just shrimp at 250g.</div>
+    <button class="speak-btn" onclick="speak('Tempura Shrimp. Two hundred fifty grams, light crispy tempura batter. Great for sharing.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter / Shareable</div>
+    <div class="card-title">🫘 Nachos</div>
+    <div class="card-desc">Tortilla chips with 100g melted cheese, beans, jalapeños, guacamole, sour cream, and salsa. Optional add-ons: flank steak (150g), bacon (80g), or chicken (150g).</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Toppings = <strong>B-J-G-S-S</strong>: Beans, Jalapeños, Guac, Sour cream, Salsa. Proteins: Steak/Chicken = 150g · Bacon = 80g (half).</div>
+    <button class="speak-btn" onclick="speak('Nachos. Chips with cheese, beans, jalapeños, guacamole, sour cream, salsa. Add steak, chicken at one fifty grams, or bacon at eighty grams.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter</div>
+    <div class="card-title">🍔 Beef Sliders</div>
+    <div class="card-desc">3 juicy 70g beef sliders with American cheese and fresh pickles.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"3 little ducks, 70 grams each." Three = always three. Cheese + pickles, nothing else.</div>
+    <button class="speak-btn" onclick="speak('Beef Sliders. Three patties, seventy grams each, American cheese and pickles.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter · Seafood</div>
+    <div class="card-title">🦐 Shrimp Cocktail</div>
+    <div class="card-desc">250g fresh shrimp with house-made cocktail sauce, made fresh every day. Light and refreshing.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"250 cold shrimp, sauce fresh daily." The word cocktail here means FOOD, not a drink — don't get confused!</div>
+    <button class="speak-btn" onclick="speak('Shrimp Cocktail. Two fifty grams fresh shrimp, house made cocktail sauce, made fresh daily.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Starter · Seafood</div>
+    <div class="card-title">🌶️ Aguachile</div>
+    <div class="card-desc">250g fresh shrimp marinated raw in lime juice with chili peppers, cilantro, and onion. Spice level customizable. Like a spicy Mexican ceviche.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Agua = water · Chile = chili. "Shrimp swimming in spicy lime water." Raw-cured, not heat-cooked. <em>Ask guests: hot, medium, or mild?</em></div>
+    <div class="tip"><strong>⭐ Upsell tip:</strong> Reviewers specifically recommend it — "try the aguachile, you can order how spicy you want it."</div>
+    <button class="speak-btn" onclick="speak('Aguachile. Two fifty grams shrimp cured raw in lime juice with chili, cilantro, and onion. Ask the guest how spicy.')">🔊 Listen</button>
+  </div>
+
+  <div class="section-label">⭐ Star Dishes</div>
+
+  <div class="card">
+    <div class="badge">⭐ Signature · Seafood</div>
+    <div class="card-title">🦐🥓 Bacon-Wrapped Shrimp</div>
+    <div class="card-desc">300g deep-fried jumbo shrimp wrapped in bacon, served in a margarita glass with house cocktail sauce + 150g fries. The #1 reviewed dish at the Duck.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"300 grams, MARGARITA GLASS (not a plate!), + 150 fries." Menu literally says "just deadly good!" Learn this one first.</div>
+    <div class="tip"><strong>⭐ How to sell it:</strong> "Our most famous dish — jumbo shrimp wrapped in crispy bacon, served dramatically in a margarita glass. Multiple 5-star reviews just for this one."</div>
+    <button class="speak-btn" onclick="speak('Bacon Wrapped Shrimp. Three hundred grams deep fried jumbo shrimp in bacon. Served in a margarita glass with cocktail sauce and one fifty fries. The number one dish.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Mains · Seafood</div>
+    <div class="card-title">🐟 Fish & Chips</div>
+    <div class="card-desc">Battered Mahi Mahi fillet with house-made tartar sauce and fries. Local Pacific fish — reviewers called it outstanding.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Not cod — it's MAHI MAHI." Pacific fish, tropical twist on a British classic. House tartar = made fresh.</div>
+    <button class="speak-btn" onclick="speak('Fish and Chips. Battered Mahi Mahi. House tartar sauce and fries. Local Pacific fish, not cod.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Mains · Seafood</div>
+    <div class="card-title">🌮 Shrimp Tacos (3)</div>
+    <div class="card-desc">3 tacos with 150g tempura shrimp in corn tortillas, coleslaw, Mexican sauce, and tartar sauce.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"3 tacos, tempura shrimp, corn tortilla, 3 sauces." Always 3 tacos per order. Coleslaw + Mexican sauce + tartar = the trio.</div>
+    <button class="speak-btn" onclick="speak('Shrimp Tacos. Three tacos, one fifty grams tempura shrimp, corn tortillas, coleslaw, Mexican sauce, tartar sauce.')">🔊 Listen</button>
+  </div>
+
+  <div class="section-label">🍔 Burgers & Sandwiches</div>
+
+  <div class="card">
+    <div class="badge">Burger</div>
+    <div class="card-title">🍔 Classic Cheeseburger</div>
+    <div class="card-desc">House-made bun, beef patty, American cheese, lettuce, tomato, pickles. Served with fries. Reviewed as "one of the best cheeseburgers I've ever had at home or abroad."</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The surprise hit." At a cantina in Mexico — this burger stunned everyone. House-made buns = key detail.</div>
+    <div class="tip"><strong>⭐ Sell it:</strong> "Guests from Canada fly back just to eat this burger again."</div>
+    <button class="speak-btn" onclick="speak('Classic Cheeseburger. House-made bun, beef patty, American cheese, lettuce, tomato, pickles, and fries. Five-star reviews.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Burger</div>
+    <div class="card-title">🍗 Tempura Chicken Ranch Burger</div>
+    <div class="card-desc">150g crispy tempura-fried chicken breast + 30g bacon + American cheese + ranch dressing on a toasted house-made bun. Served with 150g fries.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Tempura armour on the chicken, ranch on top." 150g chicken + 30g bacon. Remember: <em>chicken is tempura fried</em>, not grilled.</div>
+    <button class="speak-btn" onclick="speak('Tempura Chicken Ranch Burger. One fifty grams crispy tempura chicken, thirty grams bacon, cheese, ranch dressing, house bun, one fifty fries.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Sandwich</div>
+    <div class="card-title">🥪 Club Sandwich</div>
+    <div class="card-desc">Toasted bread with 150g grilled chicken, 80g turkey ham, American cheese, 50g crispy bacon, tomato, onion, pickles, lettuce. Served with 150g fries.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Mountain of flavour" — the menu says so. Layers: Chicken 150 · Turkey ham 80 · Bacon 50. Three meats, descending weights.</div>
+    <button class="speak-btn" onclick="speak('Club Sandwich. Toasted bread, one fifty grilled chicken, eighty turkey ham, American cheese, fifty crispy bacon, veggies, one fifty fries.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Sandwich</div>
+    <div class="card-title">🍖 BBQ Rib Sandwich</div>
+    <div class="card-desc">160g tender fall-off-the-bone BBQ rib meat piled on a toasted bun with BBQ sauce. Served with 150g fries or potato salad.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"160g ribs on a bun." Only dish that offers <em>potato salad</em> as an alternative to fries. Remember that detail — guests love options.</div>
+    <button class="speak-btn" onclick="speak('BBQ Rib Sandwich. One sixty grams tender rib meat on a toasted bun with BBQ sauce. Comes with fries or potato salad.')">🔊 Listen</button>
+  </div>
+
+  <div class="section-label">🌮 Mexican Mains</div>
+
+  <div class="card">
+    <div class="badge">Mexican · Mains</div>
+    <div class="card-title">🌮 Tacos al Pastor</div>
+    <div class="card-desc">Regional Nayarit classic. Marinated pork cooked on a trompo spit, corn tortillas, pineapple, onion, cilantro.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Mexican shawarma." Pastor = shepherd. Pork on a spit with a pineapple crown on top. Pineapple = the give-away detail.</div>
+    <button class="speak-btn" onclick="speak('Tacos al Pastor. Marinated pork from a spit, corn tortillas, pineapple, onion, cilantro. The Mexican shawarma.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Canadian Special</div>
+    <div class="card-title">🍟🧀 Poutine</div>
+    <div class="card-desc">Fries topped with cheese curds and gravy. Canadian classic — a unique find in Nuevo Vallarta. Conversation starter guaranteed.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The Canadian duck on a Mexican menu." If guests look puzzled, explain: "It's Canada's national comfort food — fries, cheese curds, gravy."</div>
+    <button class="speak-btn" onclick="speak('Poutine. Canadian dish. Fries with cheese curds and gravy. Unique find in Nuevo Vallarta.')">🔊 Listen</button>
+  </div>
+
+  <div class="section-label">🐟 Seafood Mains</div>
+
+  <div class="card">
+    <div class="badge">Seafood · Seared</div>
+    <div class="card-title">🐟 Seared Tuna</div>
+    <div class="card-desc">Seared tuna — described by a reviewer as "out of this world." Fresh Pacific tuna, lightly seared, served with sides.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The quiet superstar." Not the most-ordered but one of the highest-rated. Pacific fresh, lightly seared = key selling point.</div>
+    <div class="tip"><strong>⭐ Quote to use:</strong> "A guest literally wrote 'seared tuna — out of this world' in their review."</div>
+    <button class="speak-btn" onclick="speak('Seared Tuna. Fresh Pacific tuna lightly seared. One reviewer called it out of this world.')">🔊 Listen</button>
+  </div>
+
+</div>
+
+<!-- ========== COCKTAILS ========== -->
+<div id="tab-cocktails" class="section">
+
+  <div class="section-label">🍹 Signature Cocktails (1oz pours)</div>
+
+  <div class="card">
+    <div class="badge">Signature · Classic</div>
+    <div class="card-title">🥃 Classic Margarita</div>
+    <div class="card-sub">Mexico's most iconic — always order-worthy</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Triple Sec / Cointreau</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Salt (rim) + lime wheel</span><span class="ing-qty">garnish</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Salt the rim: rub lime edge, dip in salt.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Add all liquids + ice to shaker. Shake 12–15 sec.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Strain into ice-filled rocks glass. Lime wheel garnish.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"2-1-1 and shake till done." Tequila double, lime & triple sec single. <em>Traffic light on tequila: Green (lime) → Orange (triple sec) → Spirit leads.</em></div>
+    <button class="speak-btn" onclick="speak('Classic Margarita. Two ounces tequila blanco, one ounce lime juice, one ounce triple sec. Salt rim. Shake with ice, strain into rocks glass.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Signature · Frozen</div>
+    <div class="card-title">🧊 Frozen Margarita</div>
+    <div class="card-sub">Same 2-1-1 recipe — blended with ice</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Triple Sec</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Crushed ice</span><span class="ing-qty">1 cup</span></div>
+      <div class="ing"><span class="ing-name">Fruit puree (strawberry/mango etc.)</span><span class="ing-qty">2 oz optional</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Add all to blender including ice (and fruit puree if flavored).</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Blend until smooth and slushy.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Pour into salt-rimmed glass. Garnish with fruit.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Same as classic — just blend it." Rule: <em>Shake = rocks. Blend = frozen.</em> Fruit puree makes it flavored.</div>
+    <button class="speak-btn" onclick="speak('Frozen Margarita. Same two-one-one recipe. Add fruit puree for flavored. Blend with ice until slushy.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Signature · Light</div>
+    <div class="card-title">🍊 Paloma</div>
+    <div class="card-sub">Mexico's most popular drink — bigger than margaritas locally</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name">Grapefruit soda (Jarritos/Squirt)</span><span class="ing-qty">top up</span></div>
+      <div class="ing"><span class="ing-name">Salt rim + lime wedge</span><span class="ing-qty">garnish</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Salt rim of highball glass. Fill with ice.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Pour tequila + lime juice over ice.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Top with grapefruit soda. Stir gently. Lime wedge.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Paloma = "Dove" in Spanish. Light and airy like a dove. <em>"Dove flies high on grapefruit sky."</em> Highball glass, not rocks.</div>
+    <button class="speak-btn" onclick="speak('Paloma. Two ounces tequila, half ounce lime, top with grapefruit soda. Salt rim, highball glass. Stir gently.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Signature · Smoky</div>
+    <div class="card-title">🌿 Mezcal Negroni</div>
+    <div class="card-sub">Spirit-forward — smoky, bitter, sophisticated</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Mezcal</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Campari</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Sweet Vermouth</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Orange peel twist</span><span class="ing-qty">garnish</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Combine all in mixing glass with ice.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">STIR (do not shake!) 30 seconds.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Strain over big ice cube in rocks glass. Express orange peel, drop in.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Equal parts 1-1-1. "MCV = Mexico City Victory." Always STIR — shaking clouds a spirit-only drink. Orange peel, not a slice.</div>
+    <div class="tip"><strong>💡 Key rule:</strong> Spirit-only cocktails = STIR. Cocktails with juice or cream = SHAKE.</div>
+    <button class="speak-btn" onclick="speak('Mezcal Negroni. Equal parts: one ounce each of mezcal, Campari, sweet vermouth. STIR with ice, strain over rock, orange peel twist.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Signature · Beer Cocktail</div>
+    <div class="card-title">🍺 Michelada</div>
+    <div class="card-sub">Mexico's spicy beer cocktail — perfect with food</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Mexican lager (Modelo/Corona/Pacífico)</span><span class="ing-qty">1 bottle</span></div>
+      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Hot sauce (Valentina/Tabasco)</span><span class="ing-qty">3–5 dashes</span></div>
+      <div class="ing"><span class="ing-name">Worcestershire sauce</span><span class="ing-qty">2 dashes</span></div>
+      <div class="ing"><span class="ing-name">Tajín + salt rim</span><span class="ing-qty">rim</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Tajín + salt rim on tall glass or mug.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Add lime juice, hot sauce, Worcestershire to glass.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Pour beer slowly down the side. Stir gently. Lime wedge garnish.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Beer got spicy and sour at the cantina." Lime (sour) + hot sauce (spicy) + beer (base). Tajín rim = the crown. Pour beer LAST.</div>
+    <button class="speak-btn" onclick="speak('Michelada. Tajín salt rim. Add lime juice, hot sauce, Worcestershire. Pour Mexican lager last, stir gently.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Signature · Citrus</div>
+    <div class="card-title">🍹 Cantarito</div>
+    <div class="card-sub">Jalisco party classic — Paloma's bigger sibling</div>
+    <div class="ingredients">
+      <h4>Ingredients</h4>
+      <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh lemon juice</span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name">Fresh orange juice</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name">Grapefruit soda</span><span class="ing-qty">top up</span></div>
+      <div class="ing"><span class="ing-name">Salt rim</span><span class="ing-qty">rim</span></div>
+    </div>
+    <div class="steps">
+      <h4>Method</h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t">Salt rim of clay cup or highball. Fill with ice.</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Add tequila + all three juices.</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Top with grapefruit soda. Stir. Garnish all 3 citrus wheels.</div></div>
+    </div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Paloma invited two citrus friends." L-L-O = Lime, Lemon, Orange. Paloma only has lime. Cantarito = 3 citrus + grapefruit soda.</div>
+    <button class="speak-btn" onclick="speak('Cantarito. Two ounces tequila. Half lime, half lemon, one ounce orange juice. Top with grapefruit soda. Three citrus, one glass.')">🔊 Listen</button>
+  </div>
+
+</div>
+
+<!-- ========== DRINKS ========== -->
+<div id="tab-drinks" class="section">
+
+  <div class="card">
+    <div class="badge">Beer</div>
+    <div class="card-title">🍺 Mexican Lagers</div>
+    <div class="card-desc">Modelo, Corona, Pacífico. Served ice cold — "coldest beer we've had." Bucket of 6 = 300 pesos.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>MCP = Modelo, Corona, Pacífico. "My Cold Pacífico." Bucket deal: 6 beers for 300 pesos.</div>
+    <button class="speak-btn" onclick="speak('Beers. Modelo, Corona, Pacifico. Very cold. Bucket of six beers for three hundred pesos.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Frozen Drinks · 1oz</div>
+    <div class="card-title">🧊 Frozen Drinks</div>
+    <div class="card-desc">Blended frozen cocktails — frozen margaritas, frozen palomas, and fruit-based frozen drinks. All measured in 1oz spirit pours.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Same cocktail base as signature drinks — just blended with ice. Fruit flavors available.</div>
+    <button class="speak-btn" onclick="speak('Frozen drinks. Blended cocktails, one ounce spirit pours. Frozen margaritas, palomas, fruit flavors.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Smoothies</div>
+    <div class="card-title">🥤 Fresh Smoothies</div>
+    <div class="card-desc">Fresh blended tropical fruit smoothies — mango, strawberry, pineapple. Non-alcoholic, great for designated drivers or kids.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The sober duck option." Fresh tropical fruits, blended to order. Good upsell for the whole table.</div>
+    <button class="speak-btn" onclick="speak('Smoothies. Fresh blended tropical fruits. Mango, strawberry, pineapple. Non-alcoholic.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Wine · 6oz pours</div>
+    <div class="card-title">🍷 Wine</div>
+    <div class="card-desc">Red and white wine by the glass in 6oz pours. Note the pour size when guests ask for "a glass."</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Six ounces — smaller than usual." Always confirm: 6oz pour, not a full restaurant pour. Good for food pairing.</div>
+    <button class="speak-btn" onclick="speak('Wine. Six ounce pours. Red and white. Smaller than a standard restaurant glass.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Spirits · 1oz pours</div>
+    <div class="card-title">🥃 Spirits</div>
+    <div class="card-desc">Tequila, Mezcal, Rum, Vodka, Gin, Whisky — all in 1oz measures. Agave spirits (tequila + mezcal) are the house specialty.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"One ounce, six options." The Duck runs on agave — tequila and mezcal are the stars of every cocktail.</div>
+    <button class="speak-btn" onclick="speak('Spirits. One ounce pours. Tequila, mezcal, rum, vodka, gin, whisky. Agave spirits are the house specialty.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Liqueurs · 1oz pours</div>
+    <div class="card-title">🍊 Liqueurs</div>
+    <div class="card-desc">Triple Sec, Cointreau, Kahlúa, Amaretto and more in 1oz pours. Triple sec is in every margarita. Kahlúa for after-dinner.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The flavour bridges." Triple sec = citrus bridge in margaritas. Kahlúa = coffee-sweet after-dinner bridge.</div>
+    <button class="speak-btn" onclick="speak('Liqueurs. One ounce pours. Triple sec for margaritas. Kahlua for after dinner. Flavor bridges in cocktails.')">🔊 Listen</button>
+  </div>
+
+  <div class="card">
+    <div class="badge">Soft Drinks</div>
+    <div class="card-title">🥤 Soft Drinks</div>
+    <div class="card-desc">Mexican sodas including Jarritos (grapefruit, tamarind, mandarin), Coke, water. Grapefruit Jarritos = the Paloma mixer.</div>
+    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Jarritos = the MVP mixer." Grapefruit Jarritos + 2oz tequila = instant Paloma. Know your sodas.</div>
+    <button class="speak-btn" onclick="speak('Soft drinks. Mexican sodas. Jarritos grapefruit is the paloma mixer. Also tamarind and mandarin flavors.')">🔊 Listen</button>
+  </div>
+
+</div>
+
+<!-- ========== FLASHCARDS ========== -->
+<div id="tab-flashcards" class="section">
+  <div class="fc-nav">
+    <button onclick="fcPrev()">← Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 20</span>
+    <button onclick="fcNext()">Next →</button>
+  </div>
+  <div class="fc-wrap" onclick="flipCard()">
+    <div class="fc" id="flashcard">
+      <div class="fc-front">
+        <div class="fc-emoji" id="fc-emoji">🦐</div>
+        <div class="fc-q" id="fc-front">—</div>
+        <div class="fc-tap">Tap to reveal</div>
+      </div>
+      <div class="fc-back">
+        <div class="fc-a" id="fc-back">—</div>
+      </div>
+    </div>
+  </div>
+  <button class="shuffle-btn" onclick="fcShuffle()">🔀 Shuffle Cards</button>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div id="tab-quiz" class="section">
+  <div class="quiz-meta">
+    <span>Score: <span class="quiz-val" id="score-val">0</span></span>
+    <span>Q: <span class="quiz-val" id="q-val">1</span> / 15</span>
+  </div>
+  <div class="quiz-card">
+    <div class="quiz-q" id="quiz-q">Loading...</div>
+    <div class="quiz-hint" id="quiz-hint"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+  </div>
+  <button class="action-btn" id="quiz-next" onclick="nextQuestion()" style="display:none">Next →</button>
+  <button class="reset-btn" onclick="resetQuiz()">🔄 Restart Quiz</button>
+</div>
+
+<script>
+// ── TAB SWITCHING ──
+function showTab(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('visible');
+  el.classList.add('active');
+}
+
+// ── SPEAK ──
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.88; u.lang = 'en-US';
+  window.speechSynthesis.speak(u);
+}
+
+// ── FLASHCARD DATA ──
+const cards = [
+  // FOOD
+  { emoji:'🍟', q:'French Fries', a:'220g, crispy, salt & pepper. Nothing else — the naked duck.' },
+  { emoji:'🧀', q:'Loaded Fries', a:'220g fries + 100g cheese + 50g bacon + chives. Cheese = double the bacon.' },
+  { emoji:'🫘', q:'Nachos — what are the 5 toppings?', a:'B-J-G-S-S: Beans, Jalapeños, Guac, Sour cream, Salsa. Proteins: Steak/Chicken 150g · Bacon 80g.' },
+  { emoji:'🍔', q:'Beef Sliders', a:'3 juicy 70g patties, American cheese, fresh pickles. Always 3, always 70g each.' },
+  { emoji:'🦐', q:'Tempura Shrimp', a:'250g shrimp in signature light crispy tempura batter. Same batter as onion rings.' },
+  { emoji:'🌶️', q:'Aguachile', a:'250g shrimp cured RAW in lime juice + chili + cilantro + onion. Ask spice level! Agua = water, Chile = chili.' },
+  { emoji:'🦐🥓', q:'Bacon-Wrapped Shrimp — what makes it unique?', a:'300g jumbo shrimp in bacon, SERVED IN A MARGARITA GLASS with cocktail sauce + 150g fries. #1 dish. "Deadly good!"' },
+  { emoji:'🐟', q:'Fish & Chips — what fish?', a:'MAHI MAHI — Pacific fish, not cod. House-made tartar sauce. Called "outstanding" in reviews.' },
+  { emoji:'🌮', q:'Shrimp Tacos', a:'3 tacos, 150g tempura shrimp, corn tortillas, coleslaw + Mexican sauce + tartar sauce.' },
+  { emoji:'🍔', q:'Tempura Chicken Ranch Burger', a:'150g crispy tempura chicken breast + 30g bacon + cheese + ranch on house-made bun + 150g fries.' },
+  { emoji:'🥪', q:'Club Sandwich — 3 meats in order', a:'Chicken 150g → Turkey ham 80g → Bacon 50g. Toasted bread, American cheese, veggies, 150g fries.' },
+  { emoji:'🍖', q:'BBQ Rib Sandwich — what sides?', a:'160g rib meat on toasted bun + BBQ sauce. Only dish that offers fries OR potato salad.' },
+  { emoji:'🐟', q:'Seared Tuna', a:'Fresh Pacific tuna, lightly seared. A reviewer called it "out of this world." The quiet superstar.' },
+  { emoji:'🍟🧀', q:'Poutine', a:'Canadian dish: fries + cheese curds + gravy. The wild card on a Mexican menu. Great conversation starter.' },
+  // COCKTAILS
+  { emoji:'🥃', q:'Classic Margarita — recipe rule', a:'2oz Tequila + 1oz Lime + 1oz Triple Sec. "2-1-1 shake till done." Salt rim. Strain into rocks glass.' },
+  { emoji:'🍊', q:'Paloma — what makes it fizzy?', a:'Grapefruit soda (Jarritos). 2oz tequila + ½oz lime + top grapefruit soda. Highball glass, salt rim. "Dove on grapefruit sky."' },
+  { emoji:'🌿', q:'Mezcal Negroni — shake or stir?', a:'STIR — never shake. Equal parts 1oz each: Mezcal + Campari + Sweet Vermouth. Orange peel twist. MCV.' },
+  { emoji:'🍺', q:'Michelada — build order', a:'Tajín rim → lime + hot sauce + Worcestershire → beer last. Stir gently. Mexico\'s spicy beer cocktail.' },
+  { emoji:'🍹', q:'Cantarito vs Paloma — difference?', a:'Cantarito adds lemon AND orange juice. "L-L-O" = Lime + Lemon + Orange + grapefruit soda. Paloma only has lime.' },
+  { emoji:'🍷', q:'Wine pour size at the Duck?', a:'6oz pours — smaller than a standard restaurant glass. Mention this when guests ask for "a glass of wine."' },
+];
+
+let fcOrder = [...Array(cards.length).keys()];
+let fcIndex = 0;
+
+function renderFC() {
+  const c = cards[fcOrder[fcIndex]];
+  document.getElementById('fc-emoji').textContent = c.emoji;
+  document.getElementById('fc-front').textContent = c.q;
+  document.getElementById('fc-back').textContent = c.a;
+  document.getElementById('fc-counter').textContent = `${fcIndex+1} / ${cards.length}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+}
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function fcNext() { fcIndex = (fcIndex+1) % cards.length; renderFC(); }
+function fcPrev() { fcIndex = (fcIndex-1+cards.length) % cards.length; renderFC(); }
+function fcShuffle() { fcOrder.sort(()=>Math.random()-0.5); fcIndex=0; renderFC(); }
+renderFC();
+
+// ── QUIZ DATA ──
+const quiz = [
+  { q:'What weight is the Bacon-Wrapped Shrimp?', hint:'The #1 dish', correct:'300g', opts:['150g','250g','300g','400g'] },
+  { q:'Bacon-Wrapped Shrimp is served in what?', hint:'Unexpected vessel!', correct:'A margarita glass', opts:['A plate','A basket','A margarita glass','A clay bowl'] },
+  { q:'What fish is used in Fish & Chips?', hint:'Says it twice...', correct:'Mahi Mahi', opts:['Cod','Tilapia','Mahi Mahi','Halibut'] },
+  { q:'Aguachile shrimp is cooked how?', hint:'Agua = water, Chile = chili', correct:'Raw-cured in lime juice', opts:['Grilled','Fried','Steamed','Raw-cured in lime juice'] },
+  { q:'How many tacos in the Shrimp Tacos order?', hint:'Always the same number', correct:'3', opts:['2','3','4','5'] },
+  { q:'Classic Margarita ratio — tequila : lime : triple sec?', hint:'"2-1-1 shake till done"', correct:'2 : 1 : 1', opts:['1:1:1','2:1:1','3:1:1','2:2:1'] },
+  { q:'Should you shake or stir a Mezcal Negroni?', hint:'Spirit-only rule', correct:'Stir — never shake', opts:['Shake hard','Blend it','Stir — never shake','Pour straight'] },
+  { q:'The Paloma uses which soda?', hint:'"Dove flies on __ sky"', correct:'Grapefruit soda', opts:['Club soda','Lemon soda','Grapefruit soda','Orange soda'] },
+  { q:'BBQ Rib Sandwich — what alternative side does it offer?', hint:'Only dish with this option', correct:'Potato salad', opts:['Coleslaw','Garden salad','Potato salad','Onion rings'] },
+  { q:'Nachos protein — how much bacon can you add?', hint:'Smaller than steak/chicken', correct:'80g', opts:['50g','80g','100g','150g'] },
+  { q:'How many sliders in the Beef Sliders?', hint:'Same number as shrimp tacos', correct:'3', opts:['2','3','4','6'] },
+  { q:'Wine is served in what pour size?', hint:'Smaller than a standard restaurant glass', correct:'6 oz', opts:['4 oz','5 oz','6 oz','8 oz'] },
+  { q:'Cantarito has how many citrus juices?', hint:'L-L-O rule', correct:'3 (lime, lemon, orange)', opts:['1 (lime)','2 (lime + orange)','3 (lime, lemon, orange)','4'] },
+  { q:'Club Sandwich — which meat is 80g?', hint:'Between chicken (150g) and bacon (50g)', correct:'Turkey ham', opts:['Chicken','Beef','Turkey ham','Prosciutto'] },
+  { q:'Beer bucket deal at the Duck?', hint:'6 cold ones', correct:'6 beers for 300 pesos', opts:['4 for 200 pesos','5 for 250 pesos','6 beers for 300 pesos','6 for 400 pesos'] },
+];
+
+let qIndex = 0, score = 0, answered = false;
+
+function loadQ() {
+  const q = quiz[qIndex];
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-hint').textContent = `💡 ${q.hint}`;
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('q-val').textContent = qIndex + 1;
+  document.getElementById('quiz-next').style.display = 'none';
+  answered = false;
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  [...q.opts].sort(()=>Math.random()-0.5).forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt'; b.textContent = o;
+    b.onclick = () => answer(o, q.correct);
+    opts.appendChild(b);
+  });
+}
+
+function answer(chosen, correct) {
+  if (answered) return; answered = true;
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.onclick = null;
+    if (b.textContent === correct) b.classList.add('correct');
+    else if (b.textContent === chosen) b.classList.add('wrong');
+  });
+  if (chosen === correct) score++;
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('quiz-next').style.display = 'block';
+}
+
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= quiz.length) {
+    document.querySelector('.quiz-card').innerHTML = `
+      <div class="quiz-q" style="margin-bottom:12px">🎉 Done! ${score}/${quiz.length}</div>
+      <div class="quiz-hint">${score>=13?'🦆⭐ Duck Master!':score>=9?'🦆 Good Duck!':'🦆 Keep training!'}</div>
+    `;
+    document.getElementById('quiz-next').style.display = 'none';
+  } else { loadQ(); }
+}
+
+function resetQuiz() {
+  qIndex = 0; score = 0;
+  document.querySelector('.quiz-card').innerHTML = `
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-hint" id="quiz-hint"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+  `;
+  loadQ();
+}
+
+loadQ();
+</script>
+</body>
+</html>

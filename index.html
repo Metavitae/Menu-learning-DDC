@@ -8,10 +8,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root {
     --gold: #D4950A;
-    --amber: #B87D0A;
     --rust: #8B3A0F;
     --lime: #5A7A2E;
-    --salt: #F5EDD8;
     --charcoal: #1C1A17;
     --smoke: #252219;
     --panel: #2C2820;
@@ -23,20 +21,39 @@
   body { background: var(--charcoal); color: var(--cream); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
   header {
-    background: var(--smoke);
-    border-bottom: 2px solid var(--gold);
-    padding: 14px 16px 10px;
-    text-align: center;
+    background: var(--smoke); border-bottom: 2px solid var(--gold);
+    padding: 12px 16px 8px; text-align: center;
     position: sticky; top: 0; z-index: 100;
   }
-  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem,5vw,1.8rem); color: var(--gold); }
-  header p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem,5vw,1.7rem); color: var(--gold); }
+  header p { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  .top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 14px; background: var(--smoke); border-bottom: 1px solid var(--border);
+    position: sticky; top: 58px; z-index: 99;
+  }
+  .mode-badge {
+    font-size: 0.72rem; color: var(--gold); border: 1px solid var(--gold);
+    border-radius: 12px; padding: 3px 10px; letter-spacing: 0.05em;
+  }
+  .lang-toggle {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px; display: flex; gap: 2px;
+  }
+  .lang-btn {
+    background: none; border: none; border-radius: 16px;
+    padding: 4px 12px; font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--gold); color: var(--charcoal); }
 
   .tabs {
-    display: flex; gap: 6px; padding: 12px 14px;
+    display: flex; gap: 6px; padding: 10px 14px;
     overflow-x: auto; scrollbar-width: none;
     background: var(--smoke); border-bottom: 1px solid var(--border);
-    position: sticky; top: 60px; z-index: 99;
+    position: sticky; top: 100px; z-index: 98;
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tab {
@@ -56,7 +73,11 @@
   .card {
     background: var(--panel); border: 1px solid var(--border);
     border-radius: 12px; padding: 16px; margin-bottom: 12px;
+    transition: border-color 0.2s;
   }
+  .card.listening { border-color: var(--gold); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{ border-color: var(--gold); } 50%{ border-color: #8B6A00; } }
+
   .badge {
     display: inline-block; background: rgba(212,149,10,0.15);
     border: 1px solid rgba(212,149,10,0.3); border-radius: 20px;
@@ -66,6 +87,7 @@
   .card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); margin-bottom: 4px; }
   .card-sub { font-size: 0.76rem; color: var(--muted); font-style: italic; margin-bottom: 8px; }
   .card-desc { font-size: 0.86rem; color: #D0C8B4; line-height: 1.55; }
+  .card-desc-es { font-size: 0.83rem; color: #B8B09C; line-height: 1.5; margin-top: 6px; font-style: italic; display: none; }
 
   .ingredients { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
   .ingredients h4 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
@@ -97,42 +119,22 @@
 
   .speak-btn {
     background: none; border: 1px solid var(--gold); border-radius: 16px;
-    padding: 4px 12px; color: var(--gold); font-size: 0.72rem;
-    cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px;
-    font-family: 'DM Sans', sans-serif;
+    padding: 5px 14px; color: var(--gold); font-size: 0.74rem;
+    cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+  }
+  .speak-btn:active, .speak-btn.playing { background: rgba(212,149,10,0.15); }
+
+  .section-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin: 16px 0 8px; padding-left: 2px;
   }
 
-  /* FLASHCARDS */
-  .fc-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .fc-nav button {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 8px; padding: 8px 18px; color: #C0B89A;
-    cursor: pointer; font-size: 0.84rem; font-family: 'DM Sans', sans-serif;
-  }
-  .fc-counter { font-size: 0.8rem; color: var(--muted); }
-  .fc-wrap { perspective: 1000px; cursor: pointer; margin-bottom: 12px; }
-  .fc {
-    position: relative; height: 220px;
-    transform-style: preserve-3d; transition: transform 0.45s;
-    border-radius: 12px;
-  }
-  .fc.flipped { transform: rotateY(180deg); }
-  .fc-front, .fc-back {
-    position: absolute; inset: 0; border-radius: 12px;
-    backface-visibility: hidden;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; text-align: center;
-  }
-  .fc-front { background: var(--panel); border: 1px solid var(--border); }
-  .fc-back { background: rgba(212,149,10,0.08); border: 1px solid var(--gold); transform: rotateY(180deg); }
-  .fc-emoji { font-size: 2.2rem; margin-bottom: 10px; }
-  .fc-q { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--cream); }
-  .fc-tap { font-size: 0.68rem; color: #5A5040; margin-top: 8px; }
-  .fc-a { font-size: 0.88rem; color: #E8C97A; line-height: 1.55; }
-  .shuffle-btn {
-    width: 100%; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 10px; padding: 11px; color: #C0B89A;
-    font-size: 0.86rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  /* LISTEN MODE overlay */
+  .listen-banner {
+    background: rgba(212,149,10,0.12); border: 1px solid var(--gold);
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+    font-size: 0.82rem; color: #E8C97A; text-align: center; line-height: 1.5;
   }
 
   /* QUIZ */
@@ -151,7 +153,6 @@
   .quiz-opt:hover { border-color: var(--gold); }
   .quiz-opt.correct { background: rgba(90,122,46,0.2); border-color: #5A7A2E; color: #A8D070; }
   .quiz-opt.wrong { background: rgba(139,58,15,0.2); border-color: var(--rust); color: #E08070; }
-  .quiz-opt.reveal { background: rgba(212,149,10,0.12); border-color: var(--gold); }
   .action-btn {
     width: 100%; background: var(--gold); border: none; border-radius: 10px;
     padding: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
@@ -162,523 +163,543 @@
     border-radius: 10px; padding: 11px; font-size: 0.86rem; cursor: pointer;
     margin-top: 8px; color: var(--muted); font-family: 'DM Sans', sans-serif;
   }
-  hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-  .section-label {
-    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--muted); margin: 18px 0 10px; padding-left: 2px;
-  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🦆 Drunken Duck Cantina</h1>
-  <p>Nuevo Vallarta · Learn the menu fast</p>
+  <p id="header-sub">Nuevo Vallarta · Learn the menu fast</p>
 </header>
 
+<div class="top-bar">
+  <div class="mode-badge" id="mode-badge">📖 Read Mode</div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-es" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
 <div class="tabs">
-  <div class="tab active" onclick="showTab('food',this)">🍽️ Food</div>
-  <div class="tab" onclick="showTab('cocktails',this)">🍹 Cocktails</div>
-  <div class="tab" onclick="showTab('drinks',this)">🍺 Drinks</div>
-  <div class="tab" onclick="showTab('flashcards',this)">🃏 Flashcards</div>
-  <div class="tab" onclick="showTab('quiz',this)">🎯 Quiz</div>
+  <div class="tab active" onclick="showTab('food',this)" id="tab-food-btn">🍽️ <span class="t">Food</span></div>
+  <div class="tab" onclick="showTab('cocktails',this)" id="tab-cocktails-btn">🍹 <span class="t">Cocktails</span></div>
+  <div class="tab" onclick="showTab('drinks',this)" id="tab-drinks-btn">🍺 <span class="t">Drinks</span></div>
+  <div class="tab" onclick="showTab('quiz',this)" id="tab-quiz-btn">🎯 Quiz</div>
 </div>
 
 <!-- ========== FOOD ========== -->
 <div id="tab-food" class="section visible">
+  <div id="listen-banner-food"></div>
 
-  <div class="section-label">🧺 Starters & Sides</div>
+  <div class="section-label"><span class="t" data-en="🧺 Starters & Sides" data-es="🧺 Entradas y Guarniciones">🧺 Starters & Sides</span></div>
 
-  <div class="card">
-    <div class="badge">Side</div>
-    <div class="card-title">🍟 French Fries</div>
-    <div class="card-desc">220g crispy fries, salt & pepper. Simple and classic.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"220 naked fries" — plain, nothing added.</div>
-    <button class="speak-btn" onclick="speak('French Fries. Two hundred twenty grams, crispy, salt and pepper.')">🔊 Listen</button>
+  <div class="card" data-speak-en="French Fries. Two twenty grams, crispy, salt and pepper. Nothing else." data-speak-es="Papas fritas. Doscientos veinte gramos, crujientes, sal y pimienta. Nada más.">
+    <div class="badge"><span data-en="Side" data-es="Guarnición">Side</span></div>
+    <div class="card-title">🍟 <span data-en="French Fries" data-es="Papas Fritas">French Fries</span></div>
+    <div class="card-desc" data-en="220g crispy fries, salt & pepper. Simple and classic." data-es="220g de papas crujientes, sal y pimienta. Simple y clásico.">220g crispy fries, salt & pepper. Simple and classic.</div>
+    <div class="mnemonic"><strong>🧠 <span data-en="Mnemonic" data-es="Recordatorio">Mnemonic</span></strong><span data-en='"220 naked fries" — plain, nothing added.' data-es='"220 papas desnudas" — sin nada extra.'>"220 naked fries" — plain, nothing added.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Side</div>
-    <div class="card-title">🧀 Loaded Fries</div>
-    <div class="card-desc">220g fries + 100g melted cheese + 50g bacon + chives.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"220 base, 100 cheese, 50 bacon." Cheese is always double the bacon weight.</div>
-    <button class="speak-btn" onclick="speak('Loaded Fries. Two twenty fries, one hundred cheese, fifty bacon, chives.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Loaded Fries. Two twenty fries, one hundred grams cheese, fifty grams bacon, chives on top." data-speak-es="Papas cargadas. Doscientos veinte gramos papas, cien gramos queso, cincuenta gramos tocino, cebollín.">
+    <div class="badge"><span data-en="Side" data-es="Guarnición">Side</span></div>
+    <div class="card-title">🧀 <span data-en="Loaded Fries" data-es="Papas Cargadas">Loaded Fries</span></div>
+    <div class="card-desc" data-en="220g fries + 100g melted cheese + 50g bacon + chives." data-es="220g papas + 100g queso fundido + 50g tocino + cebollín.">220g fries + 100g melted cheese + 50g bacon + chives.</div>
+    <div class="mnemonic"><strong>🧠 <span data-en="Mnemonic" data-es="Recordatorio">Mnemonic</span></strong><span data-en="220 base, 100 cheese, 50 bacon. Cheese is always double the bacon weight." data-es="220 base, 100 queso, 50 tocino. El queso siempre pesa el doble del tocino.">220 base, 100 cheese, 50 bacon. Cheese is always double the bacon weight.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter</div>
-    <div class="card-title">🍋 Tempura Onion Rings</div>
-    <div class="card-desc">Onion rings in a light, extra-crispy tempura batter. Golden fried, tender inside.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Golden rings in Japanese armour." Tempura = ultra-light crispy batter from Japan.</div>
-    <button class="speak-btn" onclick="speak('Tempura Onion Rings. Extra crispy light tempura batter, golden fried, tender inside.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Tempura Onion Rings. Extra crispy light tempura batter, golden fried, tender inside." data-speak-es="Aros de cebolla tempura. Masa tempura extra crujiente, fritos hasta dorar, tiernos por dentro.">
+    <div class="badge"><span data-en="Starter" data-es="Entrada">Starter</span></div>
+    <div class="card-title">🧅 <span data-en="Tempura Onion Rings" data-es="Aros de Cebolla Tempura">Tempura Onion Rings</span></div>
+    <div class="card-desc" data-en="Onion rings in a light extra-crispy tempura batter. Golden fried, tender inside." data-es="Aros de cebolla en masa tempura ligera y extra crujiente. Dorados por fuera, tiernos por dentro.">Onion rings in a light extra-crispy tempura batter. Golden fried, tender inside.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Golden rings in Japanese armour." Tempura = ultra-light crispy batter.' data-es='"Anillos dorados con armadura japonesa." Tempura = masa crujiente ultra-ligera.'>"Golden rings in Japanese armour."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter</div>
-    <div class="card-title">🦐 Tempura Shrimp</div>
-    <div class="card-desc">250g tender shrimp fried in signature light crispy tempura batter. Perfect shareable starter.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"250 shrimp in armour." Same tempura batter as the rings — just shrimp at 250g.</div>
-    <button class="speak-btn" onclick="speak('Tempura Shrimp. Two hundred fifty grams, light crispy tempura batter. Great for sharing.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Tempura Shrimp. Two fifty grams, light crispy tempura batter. Great for sharing." data-speak-es="Camarones tempura. Doscientos cincuenta gramos, masa tempura crujiente ligera. Perfecto para compartir.">
+    <div class="badge"><span data-en="Starter" data-es="Entrada">Starter</span></div>
+    <div class="card-title">🦐 <span data-en="Tempura Shrimp" data-es="Camarones Tempura">Tempura Shrimp</span></div>
+    <div class="card-desc" data-en="250g tender shrimp in signature light crispy tempura batter." data-es="250g de camarones tiernos en masa tempura crujiente y ligera.">250g tender shrimp in signature light crispy tempura batter.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"250 shrimp in armour." Same batter as the rings.' data-es='"250 camarones con armadura." Misma masa que los aros.'>"250 shrimp in armour."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter / Shareable</div>
+  <div class="card" data-speak-en="Nachos. Chips with cheese, beans, jalapeños, guacamole, sour cream, salsa. Add steak or chicken at one fifty grams, or bacon at eighty grams." data-speak-es="Nachos. Totopos con queso, frijoles, jalapeños, guacamole, crema y salsa. Agrega bistec o pollo ciento cincuenta gramos, o tocino ochenta gramos.">
+    <div class="badge"><span data-en="Shareable" data-es="Para compartir">Shareable</span></div>
     <div class="card-title">🫘 Nachos</div>
-    <div class="card-desc">Tortilla chips with 100g melted cheese, beans, jalapeños, guacamole, sour cream, and salsa. Optional add-ons: flank steak (150g), bacon (80g), or chicken (150g).</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Toppings = <strong>B-J-G-S-S</strong>: Beans, Jalapeños, Guac, Sour cream, Salsa. Proteins: Steak/Chicken = 150g · Bacon = 80g (half).</div>
-    <button class="speak-btn" onclick="speak('Nachos. Chips with cheese, beans, jalapeños, guacamole, sour cream, salsa. Add steak, chicken at one fifty grams, or bacon at eighty grams.')">🔊 Listen</button>
+    <div class="card-desc" data-en="Tortilla chips with 100g melted cheese, beans, jalapeños, guacamole, sour cream, salsa. Add-ons: steak/chicken (150g) or bacon (80g)." data-es="Totopos con 100g queso fundido, frijoles, jalapeños, guacamole, crema agria y salsa. Extras: bistec/pollo (150g) o tocino (80g).">Tortilla chips with 100g melted cheese, beans, jalapeños, guacamole, sour cream, salsa.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en="B-J-G-S-S: Beans, Jalapeños, Guac, Sour cream, Salsa. Proteins: Steak/Chicken 150g · Bacon 80g." data-es="F-J-G-C-S: Frijoles, Jalapeños, Guac, Crema, Salsa. Proteínas: Bistec/Pollo 150g · Tocino 80g.">B-J-G-S-S: Beans, Jalapeños, Guac, Sour cream, Salsa.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter</div>
-    <div class="card-title">🍔 Beef Sliders</div>
-    <div class="card-desc">3 juicy 70g beef sliders with American cheese and fresh pickles.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"3 little ducks, 70 grams each." Three = always three. Cheese + pickles, nothing else.</div>
-    <button class="speak-btn" onclick="speak('Beef Sliders. Three patties, seventy grams each, American cheese and pickles.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Beef Sliders. Three patties, seventy grams each, American cheese and pickles." data-speak-es="Sliders de res. Tres medallones, setenta gramos cada uno, queso americano y pepinillos.">
+    <div class="badge"><span data-en="Starter" data-es="Entrada">Starter</span></div>
+    <div class="card-title">🍔 <span data-en="Beef Sliders" data-es="Sliders de Res">Beef Sliders</span></div>
+    <div class="card-desc" data-en="3 juicy 70g beef patties with American cheese and fresh pickles." data-es="3 jugosos medallones de 70g con queso americano y pepinillos frescos.">3 juicy 70g beef patties with American cheese and fresh pickles.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"3 little ducks, 70g each." Always 3, always 70g.' data-es='"3 patitos, 70g cada uno." Siempre 3, siempre 70g.'>"3 little ducks, 70g each."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter · Seafood</div>
-    <div class="card-title">🦐 Shrimp Cocktail</div>
-    <div class="card-desc">250g fresh shrimp with house-made cocktail sauce, made fresh every day. Light and refreshing.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"250 cold shrimp, sauce fresh daily." The word cocktail here means FOOD, not a drink — don't get confused!</div>
-    <button class="speak-btn" onclick="speak('Shrimp Cocktail. Two fifty grams fresh shrimp, house made cocktail sauce, made fresh daily.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Shrimp Cocktail. Two fifty grams fresh shrimp, house made cocktail sauce, made fresh daily." data-speak-es="Coctel de camarón. Doscientos cincuenta gramos camarón fresco, salsa cóctel casera, preparada fresca todos los días.">
+    <div class="badge"><span data-en="Seafood Starter" data-es="Entrada de Mar">Seafood Starter</span></div>
+    <div class="card-title">🦐 <span data-en="Shrimp Cocktail" data-es="Cóctel de Camarón">Shrimp Cocktail</span></div>
+    <div class="card-desc" data-en="250g fresh shrimp with house-made cocktail sauce, fresh every day." data-es="250g camarón fresco con salsa cóctel casera, preparada cada día.">250g fresh shrimp with house-made cocktail sauce, fresh every day.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"250 cold shrimp, sauce fresh daily." This is FOOD, not a drink!' data-es='"250 camarones fríos, salsa fresca diaria." ¡Esto es COMIDA, no bebida!'>"250 cold shrimp, sauce fresh daily." FOOD, not a drink!</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Starter · Seafood</div>
+  <div class="card" data-speak-en="Aguachile. Two fifty grams shrimp cured raw in lime juice with chili, cilantro, and onion. Ask the guest how spicy." data-speak-es="Aguachile. Doscientos cincuenta gramos camarón curado crudo en jugo de limón con chile, cilantro y cebolla. Pregunta al cliente qué tan picante.">
+    <div class="badge"><span data-en="Seafood Starter" data-es="Entrada de Mar">Seafood Starter</span></div>
     <div class="card-title">🌶️ Aguachile</div>
-    <div class="card-desc">250g fresh shrimp marinated raw in lime juice with chili peppers, cilantro, and onion. Spice level customizable. Like a spicy Mexican ceviche.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Agua = water · Chile = chili. "Shrimp swimming in spicy lime water." Raw-cured, not heat-cooked. <em>Ask guests: hot, medium, or mild?</em></div>
-    <div class="tip"><strong>⭐ Upsell tip:</strong> Reviewers specifically recommend it — "try the aguachile, you can order how spicy you want it."</div>
-    <button class="speak-btn" onclick="speak('Aguachile. Two fifty grams shrimp cured raw in lime juice with chili, cilantro, and onion. Ask the guest how spicy.')">🔊 Listen</button>
+    <div class="card-desc" data-en="250g fresh shrimp marinated raw in lime juice, chili, cilantro, onion. Customizable spice level." data-es="250g camarón fresco marinado crudo en limón, chile, cilantro y cebolla. Nivel de picante personalizable.">250g shrimp marinated raw in lime + chili + cilantro + onion. Spice level customizable.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='Agua = water · Chile = chili. "Shrimp swimming in spicy lime water." Ask: hot, medium or mild?' data-es='Agua = agua · Chile = chile. "Camarón nadando en agua de limón picante." Pregunta: ¿qué tan picante?'>Agua = water · Chile = chili. Raw-cured, not cooked by heat.</span></div>
+    <div class="tip"><strong>⭐</strong> <span data-en="Reviewers recommend it — ask the guest their spice preference!" data-es="Los clientes lo recomiendan — ¡pregunta el nivel de picante!">Reviewers recommend it — ask the guest their spice preference!</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="section-label">⭐ Star Dishes</div>
+  <div class="section-label"><span data-en="⭐ Star Dishes" data-es="⭐ Platillos Estrella">⭐ Star Dishes</span></div>
 
-  <div class="card">
-    <div class="badge">⭐ Signature · Seafood</div>
-    <div class="card-title">🦐🥓 Bacon-Wrapped Shrimp</div>
-    <div class="card-desc">300g deep-fried jumbo shrimp wrapped in bacon, served in a margarita glass with house cocktail sauce + 150g fries. The #1 reviewed dish at the Duck.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"300 grams, MARGARITA GLASS (not a plate!), + 150 fries." Menu literally says "just deadly good!" Learn this one first.</div>
-    <div class="tip"><strong>⭐ How to sell it:</strong> "Our most famous dish — jumbo shrimp wrapped in crispy bacon, served dramatically in a margarita glass. Multiple 5-star reviews just for this one."</div>
-    <button class="speak-btn" onclick="speak('Bacon Wrapped Shrimp. Three hundred grams deep fried jumbo shrimp in bacon. Served in a margarita glass with cocktail sauce and one fifty fries. The number one dish.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Bacon Wrapped Shrimp. Three hundred grams deep fried jumbo shrimp in bacon. Served in a margarita glass with cocktail sauce and one fifty fries. The number one dish." data-speak-es="Camarones envueltos en tocino. Trescientos gramos camarones jumbo fritos en tocino. Servidos en copa de margarita con salsa cóctel y ciento cincuenta gramos de papas. El platillo número uno.">
+    <div class="badge">⭐ <span data-en="Signature" data-es="Especialidad">Signature</span></div>
+    <div class="card-title">🦐🥓 <span data-en="Bacon-Wrapped Shrimp" data-es="Camarones Envueltos en Tocino">Bacon-Wrapped Shrimp</span></div>
+    <div class="card-desc" data-en='300g deep-fried jumbo shrimp wrapped in bacon, served in a MARGARITA GLASS with cocktail sauce + 150g fries. The #1 dish. "Deadly good!"' data-es='300g camarones jumbo fritos envueltos en tocino, servidos en COPA DE MARGARITA con salsa cóctel + 150g papas. El platillo #1. "¡Mortalmente bueno!"'>300g bacon-wrapped jumbo shrimp served in a MARGARITA GLASS + 150g fries.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"300g, MARGARITA GLASS (not a plate!), + 150 fries." Learn this one first.' data-es='"300g, COPA DE MARGARITA (¡no plato!), + 150 papas." Aprende este primero.'>"300g, MARGARITA GLASS, + 150 fries." Learn this one first.</span></div>
+    <div class="tip"><strong>⭐ <span data-en="Sell it:" data-es="Véndelo:">Sell it:</span></strong> <span data-en='"Our most famous dish — jumbo shrimp wrapped in crispy bacon, served in a margarita glass."' data-es='"Nuestro platillo más famoso — camarones jumbo en tocino crujiente, servidos en copa de margarita."'>"Our most famous dish — served in a margarita glass."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Mains · Seafood</div>
-    <div class="card-title">🐟 Fish & Chips</div>
-    <div class="card-desc">Battered Mahi Mahi fillet with house-made tartar sauce and fries. Local Pacific fish — reviewers called it outstanding.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Not cod — it's MAHI MAHI." Pacific fish, tropical twist on a British classic. House tartar = made fresh.</div>
-    <button class="speak-btn" onclick="speak('Fish and Chips. Battered Mahi Mahi. House tartar sauce and fries. Local Pacific fish, not cod.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Fish and Chips. Battered Mahi Mahi. House tartar sauce and fries. Local Pacific fish, not cod." data-speak-es="Fish and chips. Mahi Mahi empanizado. Salsa tártara casera y papas. Pescado del Pacífico local, no bacalao.">
+    <div class="badge"><span data-en="Seafood Main" data-es="Mar Principal">Seafood Main</span></div>
+    <div class="card-title">🐟 Fish &amp; Chips</div>
+    <div class="card-desc" data-en="Battered Mahi Mahi fillet, house-made tartar sauce and fries. Local Pacific fish — reviewed as outstanding." data-es="Filete de Mahi Mahi empanizado, salsa tártara casera y papas. Pescado del Pacífico local — reseñado como extraordinario.">Battered Mahi Mahi, house-made tartar sauce and fries.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Not cod — it's MAHI MAHI." Pacific fish, tropical twist on a British classic.' data-es='"No es bacalao — es MAHI MAHI." Pescado del Pacífico, toque tropical a un clásico británico.'>"Not cod — it's MAHI MAHI."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Mains · Seafood</div>
-    <div class="card-title">🌮 Shrimp Tacos (3)</div>
-    <div class="card-desc">3 tacos with 150g tempura shrimp in corn tortillas, coleslaw, Mexican sauce, and tartar sauce.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"3 tacos, tempura shrimp, corn tortilla, 3 sauces." Always 3 tacos per order. Coleslaw + Mexican sauce + tartar = the trio.</div>
-    <button class="speak-btn" onclick="speak('Shrimp Tacos. Three tacos, one fifty grams tempura shrimp, corn tortillas, coleslaw, Mexican sauce, tartar sauce.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Seared Tuna. Fresh Pacific tuna lightly seared. One reviewer called it out of this world." data-speak-es="Atún sellado. Atún fresco del Pacífico sellado ligeramente. Un cliente lo llamó fuera de este mundo.">
+    <div class="badge"><span data-en="Seafood Main" data-es="Mar Principal">Seafood Main</span></div>
+    <div class="card-title">🐟 <span data-en="Seared Tuna" data-es="Atún Sellado">Seared Tuna</span></div>
+    <div class="card-desc" data-en="Fresh Pacific tuna, lightly seared. Reviewer quote: 'out of this world.'" data-es="Atún fresco del Pacífico, sellado ligeramente. Reseña: 'fuera de este mundo.'">Fresh Pacific tuna, lightly seared. Reviewer quote: "out of this world."</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"The quiet superstar." Not the most-ordered but one of the highest-rated.' data-es='"La superestrella silenciosa." No el más pedido pero uno de los mejor calificados.'>"The quiet superstar."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="section-label">🍔 Burgers & Sandwiches</div>
+  <div class="section-label"><span data-en="🍔 Burgers & Sandwiches" data-es="🍔 Hamburguesas y Sándwiches">🍔 Burgers & Sandwiches</span></div>
 
-  <div class="card">
-    <div class="badge">Burger</div>
-    <div class="card-title">🍔 Classic Cheeseburger</div>
-    <div class="card-desc">House-made bun, beef patty, American cheese, lettuce, tomato, pickles. Served with fries. Reviewed as "one of the best cheeseburgers I've ever had at home or abroad."</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The surprise hit." At a cantina in Mexico — this burger stunned everyone. House-made buns = key detail.</div>
-    <div class="tip"><strong>⭐ Sell it:</strong> "Guests from Canada fly back just to eat this burger again."</div>
-    <button class="speak-btn" onclick="speak('Classic Cheeseburger. House-made bun, beef patty, American cheese, lettuce, tomato, pickles, and fries. Five-star reviews.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Classic Cheeseburger. House-made bun, beef patty, American cheese, lettuce, tomato, pickles, and fries. Five star reviews." data-speak-es="Hamburguesa clásica con queso. Pan artesanal, medallón de res, queso americano, lechuga, jitomate, pepinillos y papas. Cinco estrellas.">
+    <div class="badge"><span data-en="Burger" data-es="Hamburguesa">Burger</span></div>
+    <div class="card-title">🍔 <span data-en="Classic Cheeseburger" data-es="Hamburguesa Clásica con Queso">Classic Cheeseburger</span></div>
+    <div class="card-desc" data-en="House-made bun, beef patty, American cheese, lettuce, tomato, pickles + fries. 'One of the best cheeseburgers I've ever had.'" data-es="Pan artesanal, medallón de res, queso americano, lechuga, jitomate, pepinillos + papas. 'Una de las mejores hamburguesas que he probado.'">House-made bun, beef patty, cheese, lettuce, tomato, pickles + fries.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"The surprise hit." House-made buns = key detail.' data-es='"El éxito sorpresa." Pan artesanal = detalle clave.'>"The surprise hit." House-made buns.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Burger</div>
-    <div class="card-title">🍗 Tempura Chicken Ranch Burger</div>
-    <div class="card-desc">150g crispy tempura-fried chicken breast + 30g bacon + American cheese + ranch dressing on a toasted house-made bun. Served with 150g fries.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Tempura armour on the chicken, ranch on top." 150g chicken + 30g bacon. Remember: <em>chicken is tempura fried</em>, not grilled.</div>
-    <button class="speak-btn" onclick="speak('Tempura Chicken Ranch Burger. One fifty grams crispy tempura chicken, thirty grams bacon, cheese, ranch dressing, house bun, one fifty fries.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Tempura Chicken Ranch Burger. One fifty grams crispy tempura chicken, thirty grams bacon, cheese, ranch dressing, house bun, one fifty fries." data-speak-es="Hamburguesa de pollo tempura ranch. Ciento cincuenta gramos pollo tempura crujiente, treinta gramos tocino, queso, aderezo ranch, pan artesanal, ciento cincuenta gramos papas.">
+    <div class="badge"><span data-en="Burger" data-es="Hamburguesa">Burger</span></div>
+    <div class="card-title">🍗 <span data-en="Tempura Chicken Ranch Burger" data-es="Hamburguesa de Pollo Tempura Ranch">Tempura Chicken Ranch Burger</span></div>
+    <div class="card-desc" data-en="150g crispy tempura chicken + 30g bacon + cheese + ranch on house-made bun + 150g fries." data-es="150g pollo tempura crujiente + 30g tocino + queso + ranch en pan artesanal + 150g papas.">150g tempura chicken + 30g bacon + cheese + ranch + house bun + 150g fries.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Tempura armour on the chicken, ranch on top." 150g chicken + 30g bacon.' data-es='"Armadura tempura en el pollo, ranch encima." 150g pollo + 30g tocino.'>"Tempura armour on the chicken, ranch on top."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Sandwich</div>
-    <div class="card-title">🥪 Club Sandwich</div>
-    <div class="card-desc">Toasted bread with 150g grilled chicken, 80g turkey ham, American cheese, 50g crispy bacon, tomato, onion, pickles, lettuce. Served with 150g fries.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Mountain of flavour" — the menu says so. Layers: Chicken 150 · Turkey ham 80 · Bacon 50. Three meats, descending weights.</div>
-    <button class="speak-btn" onclick="speak('Club Sandwich. Toasted bread, one fifty grilled chicken, eighty turkey ham, American cheese, fifty crispy bacon, veggies, one fifty fries.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Club Sandwich. Toasted bread, one fifty grilled chicken, eighty turkey ham, American cheese, fifty crispy bacon, veggies, one fifty fries." data-speak-es="Club sándwich. Pan tostado, ciento cincuenta gramos pollo a la plancha, ochenta gramos jamón de pavo, queso americano, cincuenta gramos tocino crujiente, verduras, ciento cincuenta gramos papas.">
+    <div class="badge"><span data-en="Sandwich" data-es="Sándwich">Sandwich</span></div>
+    <div class="card-title">🥪 <span data-en="Club Sandwich" data-es="Club Sándwich">Club Sandwich</span></div>
+    <div class="card-desc" data-en="Toasted bread + 150g grilled chicken + 80g turkey ham + cheese + 50g bacon + veggies + 150g fries." data-es="Pan tostado + 150g pollo a la plancha + 80g jamón de pavo + queso + 50g tocino + verduras + 150g papas.">Toasted bread + 150g chicken + 80g turkey ham + 50g bacon + veggies + fries.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en="Three meats descending: Chicken 150 → Turkey ham 80 → Bacon 50." data-es="Tres carnes descendentes: Pollo 150 → Jamón de pavo 80 → Tocino 50.">Three meats descending: 150 → 80 → 50.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Sandwich</div>
-    <div class="card-title">🍖 BBQ Rib Sandwich</div>
-    <div class="card-desc">160g tender fall-off-the-bone BBQ rib meat piled on a toasted bun with BBQ sauce. Served with 150g fries or potato salad.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"160g ribs on a bun." Only dish that offers <em>potato salad</em> as an alternative to fries. Remember that detail — guests love options.</div>
-    <button class="speak-btn" onclick="speak('BBQ Rib Sandwich. One sixty grams tender rib meat on a toasted bun with BBQ sauce. Comes with fries or potato salad.')">🔊 Listen</button>
+  <div class="card" data-speak-en="BBQ Rib Sandwich. One sixty grams tender rib meat on a toasted bun with BBQ sauce. Comes with fries or potato salad." data-speak-es="Sándwich de costilla BBQ. Ciento sesenta gramos carne de costilla tierna en pan tostado con salsa BBQ. Con papas o ensalada de papa.">
+    <div class="badge"><span data-en="Sandwich" data-es="Sándwich">Sandwich</span></div>
+    <div class="card-title">🍖 <span data-en="BBQ Rib Sandwich" data-es="Sándwich de Costilla BBQ">BBQ Rib Sandwich</span></div>
+    <div class="card-desc" data-en="160g fall-off-the-bone BBQ rib meat on toasted bun + BBQ sauce. Served with fries OR potato salad." data-es="160g carne de costilla en pan tostado + salsa BBQ. Con papas o ensalada de papa.">160g rib meat on toasted bun + BBQ sauce. Fries OR potato salad.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"160g ribs on a bun." Only dish that offers potato salad as alternative.' data-es='"160g costilla en pan." Único platillo con ensalada de papa como opción.'>"160g ribs on a bun." Only dish with potato salad option.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="section-label">🌮 Mexican Mains</div>
+  <div class="section-label"><span data-en="🌮 Mexican Mains" data-es="🌮 Platillos Mexicanos">🌮 Mexican Mains</span></div>
 
-  <div class="card">
-    <div class="badge">Mexican · Mains</div>
-    <div class="card-title">🌮 Tacos al Pastor</div>
-    <div class="card-desc">Regional Nayarit classic. Marinated pork cooked on a trompo spit, corn tortillas, pineapple, onion, cilantro.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Mexican shawarma." Pastor = shepherd. Pork on a spit with a pineapple crown on top. Pineapple = the give-away detail.</div>
-    <button class="speak-btn" onclick="speak('Tacos al Pastor. Marinated pork from a spit, corn tortillas, pineapple, onion, cilantro. The Mexican shawarma.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Shrimp Tacos. Three tacos, one fifty grams tempura shrimp, corn tortillas, coleslaw, Mexican sauce, tartar sauce." data-speak-es="Tacos de camarón. Tres tacos, ciento cincuenta gramos camarón tempura, tortillas de maíz, ensalada de col, salsa mexicana, salsa tártara.">
+    <div class="badge"><span data-en="Seafood · Mexican" data-es="Mar · Mexicano">Seafood · Mexican</span></div>
+    <div class="card-title">🌮 <span data-en="Shrimp Tacos (3)" data-es="Tacos de Camarón (3)">Shrimp Tacos (3)</span></div>
+    <div class="card-desc" data-en="3 tacos with 150g tempura shrimp, corn tortillas, coleslaw, Mexican sauce and tartar sauce." data-es="3 tacos con 150g camarón tempura, tortillas de maíz, col, salsa mexicana y salsa tártara.">3 tacos, 150g tempura shrimp, corn tortillas, coleslaw + 3 sauces.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Always 3 tacos per order. Coleslaw + Mexican sauce + tartar = the trio."' data-es='"Siempre 3 tacos por orden. Col + salsa mexicana + tártara = el trío."'>Always 3 tacos. Three sauces too.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Canadian Special</div>
+  <div class="card" data-speak-en="Tacos al Pastor. Marinated pork from a spit, corn tortillas, pineapple, onion, cilantro. The Mexican shawarma." data-speak-es="Tacos al pastor. Cerdo marinado en trompo, tortillas de maíz, piña, cebolla, cilantro. El shawarma mexicano.">
+    <div class="badge"><span data-en="Mexican Classic" data-es="Clásico Mexicano">Mexican Classic</span></div>
+    <div class="card-title">🌮 <span data-en="Tacos al Pastor" data-es="Tacos al Pastor">Tacos al Pastor</span></div>
+    <div class="card-desc" data-en="Marinated pork from a trompo spit, corn tortillas, pineapple, onion, cilantro." data-es="Cerdo marinado del trompo, tortillas de maíz, piña, cebolla, cilantro.">Marinated pork from trompo spit, pineapple, onion, cilantro.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Mexican shawarma." Pastor = shepherd. Pork on a spit with a pineapple crown.' data-es='"Shawarma mexicano." Pastor = pastor. Cerdo en trompo con corona de piña.'>"Mexican shawarma." Pineapple crown on top.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
+  </div>
+
+  <div class="card" data-speak-en="Poutine. Canadian dish. Fries with cheese curds and gravy. Unique find in Nuevo Vallarta." data-speak-es="Poutine. Platillo canadiense. Papas con queso y salsa de carne. Curiosidad única en Nuevo Vallarta.">
+    <div class="badge"><span data-en="Canadian Special" data-es="Especial Canadiense">Canadian Special</span></div>
     <div class="card-title">🍟🧀 Poutine</div>
-    <div class="card-desc">Fries topped with cheese curds and gravy. Canadian classic — a unique find in Nuevo Vallarta. Conversation starter guaranteed.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The Canadian duck on a Mexican menu." If guests look puzzled, explain: "It's Canada's national comfort food — fries, cheese curds, gravy."</div>
-    <button class="speak-btn" onclick="speak('Poutine. Canadian dish. Fries with cheese curds and gravy. Unique find in Nuevo Vallarta.')">🔊 Listen</button>
-  </div>
-
-  <div class="section-label">🐟 Seafood Mains</div>
-
-  <div class="card">
-    <div class="badge">Seafood · Seared</div>
-    <div class="card-title">🐟 Seared Tuna</div>
-    <div class="card-desc">Seared tuna — described by a reviewer as "out of this world." Fresh Pacific tuna, lightly seared, served with sides.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The quiet superstar." Not the most-ordered but one of the highest-rated. Pacific fresh, lightly seared = key selling point.</div>
-    <div class="tip"><strong>⭐ Quote to use:</strong> "A guest literally wrote 'seared tuna — out of this world' in their review."</div>
-    <button class="speak-btn" onclick="speak('Seared Tuna. Fresh Pacific tuna lightly seared. One reviewer called it out of this world.')">🔊 Listen</button>
+    <div class="card-desc" data-en="Fries topped with cheese curds and gravy. Canadian classic — unique in Nuevo Vallarta." data-es="Papas con queso tipo cuajada y salsa de carne. Clásico canadiense — único en Nuevo Vallarta.">Fries + cheese curds + gravy. Canadian classic.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"The Canadian duck on a Mexican menu." If guests look puzzled, explain!' data-es='"El pato canadiense en un menú mexicano." Si los clientes se confunden, explica!'>"The Canadian duck on a Mexican menu."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
 </div>
 
 <!-- ========== COCKTAILS ========== -->
 <div id="tab-cocktails" class="section">
+  <div id="listen-banner-cocktails"></div>
+  <div class="section-label"><span data-en="🍹 Signature Cocktails (1oz pours)" data-es="🍹 Cócteles Especiales (medidas de 1oz)">🍹 Signature Cocktails (1oz pours)</span></div>
 
-  <div class="section-label">🍹 Signature Cocktails (1oz pours)</div>
-
-  <div class="card">
-    <div class="badge">Signature · Classic</div>
-    <div class="card-title">🥃 Classic Margarita</div>
-    <div class="card-sub">Mexico's most iconic — always order-worthy</div>
+  <div class="card" data-speak-en="Classic Margarita. Two ounces tequila blanco, one ounce lime juice, one ounce triple sec. Salt rim. Shake with ice, strain into rocks glass." data-speak-es="Margarita clásica. Dos onzas tequila blanco, una onza jugo de limón, una onza triple sec. Borde de sal. Agitar con hielo, colar en vaso rocks.">
+    <div class="badge"><span data-en="Classic" data-es="Clásico">Classic</span></div>
+    <div class="card-title">🥃 <span data-en="Classic Margarita" data-es="Margarita Clásica">Classic Margarita</span></div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
-      <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Triple Sec / Cointreau</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Salt (rim) + lime wheel</span><span class="ing-qty">garnish</span></div>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
+      <div class="ing"><span class="ing-name"><span data-en="Tequila Blanco" data-es="Tequila Blanco">Tequila Blanco</span></span><span class="ing-qty">2 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Fresh lime juice" data-es="Jugo de limón fresco">Fresh lime juice</span></span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Triple Sec / Cointreau" data-es="Triple Sec / Cointreau">Triple Sec / Cointreau</span></span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Salt rim + lime wheel" data-es="Borde sal + rodaja limón">Salt rim + lime wheel</span></span><span class="ing-qty"><span data-en="garnish" data-es="adorno">garnish</span></span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Salt the rim: rub lime edge, dip in salt.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">Add all liquids + ice to shaker. Shake 12–15 sec.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Strain into ice-filled rocks glass. Lime wheel garnish.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Salt the rim: rub lime edge, dip in salt." data-es="Escarchar el borde: frotar limón, sumergir en sal.">Salt the rim: rub lime edge, dip in salt.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="Add all liquids + ice to shaker. Shake 12–15 sec." data-es="Agregar todos los líquidos + hielo al shaker. Agitar 12–15 seg.">Add all liquids + ice to shaker. Shake 12–15 sec.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Strain into ice-filled rocks glass. Lime wheel garnish." data-es="Colar en vaso rocks con hielo. Adornar con rodaja de limón.">Strain into ice-filled rocks glass. Lime wheel garnish.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"2-1-1 and shake till done." Tequila double, lime & triple sec single. <em>Traffic light on tequila: Green (lime) → Orange (triple sec) → Spirit leads.</em></div>
-    <button class="speak-btn" onclick="speak('Classic Margarita. Two ounces tequila blanco, one ounce lime juice, one ounce triple sec. Salt rim. Shake with ice, strain into rocks glass.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"2-1-1 shake till done." Traffic light: Green (lime) → Orange (triple sec) → Spirit leads.' data-es='"2-1-1 agitar y listo." Semáforo: Verde (limón) → Naranja (triple sec) → Espíritu lidera.'>"2-1-1 shake till done."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Signature · Frozen</div>
-    <div class="card-title">🧊 Frozen Margarita</div>
-    <div class="card-sub">Same 2-1-1 recipe — blended with ice</div>
+  <div class="card" data-speak-en="Frozen Margarita. Same two-one-one recipe. Add fruit puree for flavored. Blend with ice until slushy." data-speak-es="Margarita congelada. Misma receta dos-uno-uno. Agrega puré de fruta para saborizada. Licuar con hielo hasta textura granizada.">
+    <div class="badge"><span data-en="Frozen" data-es="Congelada">Frozen</span></div>
+    <div class="card-title">🧊 <span data-en="Frozen Margarita" data-es="Margarita Congelada">Frozen Margarita</span></div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
       <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Fresh lime juice" data-es="Jugo de limón">Fresh lime juice</span></span><span class="ing-qty">1 oz</span></div>
       <div class="ing"><span class="ing-name">Triple Sec</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Crushed ice</span><span class="ing-qty">1 cup</span></div>
-      <div class="ing"><span class="ing-name">Fruit puree (strawberry/mango etc.)</span><span class="ing-qty">2 oz optional</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Crushed ice" data-es="Hielo molido">Crushed ice</span></span><span class="ing-qty">1 cup</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Fruit puree (optional)" data-es="Puré de fruta (opcional)">Fruit puree (optional)</span></span><span class="ing-qty">2 oz</span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Add all to blender including ice (and fruit puree if flavored).</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">Blend until smooth and slushy.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Pour into salt-rimmed glass. Garnish with fruit.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Add all to blender with ice (+ fruit puree if flavored)." data-es="Agregar todo a la licuadora con hielo (+ puré si es saborizada).">Add all to blender with ice.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="Blend until smooth and slushy." data-es="Licuar hasta textura granizada suave.">Blend until smooth and slushy.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Pour into salt-rimmed glass. Garnish with fruit." data-es="Servir en vaso con borde de sal. Adornar con fruta.">Pour into salt-rimmed glass.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Same as classic — just blend it." Rule: <em>Shake = rocks. Blend = frozen.</em> Fruit puree makes it flavored.</div>
-    <button class="speak-btn" onclick="speak('Frozen Margarita. Same two-one-one recipe. Add fruit puree for flavored. Blend with ice until slushy.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Same as classic — just blend it." Shake = rocks. Blend = frozen.' data-es='"Igual que la clásica — solo licúa." Agitar = rocks. Licuar = congelada.'>"Same as classic — just blend it."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Signature · Light</div>
+  <div class="card" data-speak-en="Paloma. Two ounces tequila, half ounce lime, top with grapefruit soda. Salt rim, highball glass. Stir gently." data-speak-es="Paloma. Dos onzas tequila, media onza limón, completar con refresco de toronja. Borde de sal, vaso highball. Mezclar suavemente.">
+    <div class="badge"><span data-en="Light & Fizzy" data-es="Ligera y Burbujeante">Light & Fizzy</span></div>
     <div class="card-title">🍊 Paloma</div>
-    <div class="card-sub">Mexico's most popular drink — bigger than margaritas locally</div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
       <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">½ oz</span></div>
-      <div class="ing"><span class="ing-name">Grapefruit soda (Jarritos/Squirt)</span><span class="ing-qty">top up</span></div>
-      <div class="ing"><span class="ing-name">Salt rim + lime wedge</span><span class="ing-qty">garnish</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Fresh lime juice" data-es="Jugo de limón">Fresh lime juice</span></span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Grapefruit soda (Jarritos)" data-es="Refresco de toronja (Jarritos)">Grapefruit soda (Jarritos)</span></span><span class="ing-qty"><span data-en="top up" data-es="al tope">top up</span></span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Salt rim + lime wedge" data-es="Borde sal + gajo limón">Salt rim + lime wedge</span></span><span class="ing-qty"><span data-en="garnish" data-es="adorno">garnish</span></span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Salt rim of highball glass. Fill with ice.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">Pour tequila + lime juice over ice.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Top with grapefruit soda. Stir gently. Lime wedge.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Salt rim of highball glass. Fill with ice." data-es="Escarchar borde de vaso highball. Llenar con hielo.">Salt rim of highball. Fill with ice.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="Pour tequila + lime juice over ice." data-es="Verter tequila + jugo de limón sobre el hielo.">Pour tequila + lime juice.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Top with grapefruit soda. Stir gently. Lime wedge garnish." data-es="Completar con refresco de toronja. Mezclar suavemente. Adornar con gajo.">Top with grapefruit soda. Stir gently.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Paloma = "Dove" in Spanish. Light and airy like a dove. <em>"Dove flies high on grapefruit sky."</em> Highball glass, not rocks.</div>
-    <button class="speak-btn" onclick="speak('Paloma. Two ounces tequila, half ounce lime, top with grapefruit soda. Salt rim, highball glass. Stir gently.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='Paloma = "Dove." Light and airy. "Dove flies high on grapefruit sky." Highball glass.' data-es='Paloma = "Dove." Ligera y aérea. "La paloma vuela alto en cielo de toronja." Vaso highball.'>Paloma = Dove. "Dove flies on grapefruit sky."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Signature · Smoky</div>
-    <div class="card-title">🌿 Mezcal Negroni</div>
-    <div class="card-sub">Spirit-forward — smoky, bitter, sophisticated</div>
+  <div class="card" data-speak-en="Mezcal Negroni. Equal parts: one ounce each of mezcal, Campari, sweet vermouth. STIR with ice, strain over rock, orange peel twist." data-speak-es="Negroni de mezcal. Partes iguales: una onza cada uno de mezcal, Campari, vermut dulce. REVOLVER con hielo, colar sobre hielo, twist de naranja.">
+    <div class="badge"><span data-en="Smoky & Spirit-forward" data-es="Ahumado · Espirituoso">Smoky & Spirit-forward</span></div>
+    <div class="card-title">🌿 <span data-en="Mezcal Negroni" data-es="Negroni de Mezcal">Mezcal Negroni</span></div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
       <div class="ing"><span class="ing-name">Mezcal</span><span class="ing-qty">1 oz</span></div>
       <div class="ing"><span class="ing-name">Campari</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Sweet Vermouth</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Orange peel twist</span><span class="ing-qty">garnish</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Sweet Vermouth" data-es="Vermut Dulce">Sweet Vermouth</span></span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Orange peel twist" data-es="Twist de cáscara de naranja">Orange peel twist</span></span><span class="ing-qty"><span data-en="garnish" data-es="adorno">garnish</span></span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Combine all in mixing glass with ice.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">STIR (do not shake!) 30 seconds.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Strain over big ice cube in rocks glass. Express orange peel, drop in.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Combine all in mixing glass with ice." data-es="Combinar todo en vaso mezclador con hielo.">Combine all in mixing glass with ice.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="STIR — do NOT shake! 30 seconds." data-es="REVOLVER — ¡no agitar! 30 segundos.">STIR — do NOT shake! 30 seconds.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Strain over big ice cube. Express orange peel, drop in." data-es="Colar sobre cubo grande de hielo. Expresar cáscara de naranja, dejar caer.">Strain over big ice. Express orange peel.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Equal parts 1-1-1. "MCV = Mexico City Victory." Always STIR — shaking clouds a spirit-only drink. Orange peel, not a slice.</div>
-    <div class="tip"><strong>💡 Key rule:</strong> Spirit-only cocktails = STIR. Cocktails with juice or cream = SHAKE.</div>
-    <button class="speak-btn" onclick="speak('Mezcal Negroni. Equal parts: one ounce each of mezcal, Campari, sweet vermouth. STIR with ice, strain over rock, orange peel twist.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='Equal 1-1-1. "MCV = Mexico City Victory." STIR, never shake. Orange peel only.' data-es='Iguales 1-1-1. "MCV = México City Victoria." REVOLVER, nunca agitar. Solo cáscara de naranja.'>Equal 1-1-1. MCV. Always STIR.</span></div>
+    <div class="tip"><strong>💡</strong> <span data-en="Spirit-only drinks = STIR. Drinks with juice = SHAKE." data-es="Cócteles solo de espirituosos = REVOLVER. Con jugos = AGITAR.">Spirit-only = STIR. With juice = SHAKE.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Signature · Beer Cocktail</div>
+  <div class="card" data-speak-en="Michelada. Tajín salt rim. Add lime juice, hot sauce, Worcestershire. Pour Mexican lager last, stir gently." data-speak-es="Michelada. Borde de Tajín y sal. Agregar jugo de limón, salsa picante, salsa inglesa. Verter cerveza mexicana al final, mezclar suavemente.">
+    <div class="badge"><span data-en="Beer Cocktail" data-es="Cóctel de Cerveza">Beer Cocktail</span></div>
     <div class="card-title">🍺 Michelada</div>
-    <div class="card-sub">Mexico's spicy beer cocktail — perfect with food</div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
-      <div class="ing"><span class="ing-name">Mexican lager (Modelo/Corona/Pacífico)</span><span class="ing-qty">1 bottle</span></div>
-      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Hot sauce (Valentina/Tabasco)</span><span class="ing-qty">3–5 dashes</span></div>
-      <div class="ing"><span class="ing-name">Worcestershire sauce</span><span class="ing-qty">2 dashes</span></div>
-      <div class="ing"><span class="ing-name">Tajín + salt rim</span><span class="ing-qty">rim</span></div>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
+      <div class="ing"><span class="ing-name"><span data-en="Mexican lager" data-es="Cerveza mexicana">Mexican lager</span></span><span class="ing-qty">1 <span data-en="bottle" data-es="botella">bottle</span></span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Fresh lime juice" data-es="Jugo de limón">Fresh lime juice</span></span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Hot sauce (Valentina)" data-es="Salsa picante (Valentina)">Hot sauce (Valentina)</span></span><span class="ing-qty">3–5 <span data-en="dashes" data-es="gotas">dashes</span></span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Worcestershire sauce" data-es="Salsa inglesa">Worcestershire sauce</span></span><span class="ing-qty">2 <span data-en="dashes" data-es="gotas">dashes</span></span></div>
+      <div class="ing"><span class="ing-name">Tajín + <span data-en="salt rim" data-es="borde de sal">salt rim</span></span><span class="ing-qty"><span data-en="rim" data-es="borde">rim</span></span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Tajín + salt rim on tall glass or mug.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">Add lime juice, hot sauce, Worcestershire to glass.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Pour beer slowly down the side. Stir gently. Lime wedge garnish.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Tajín + salt rim on tall glass." data-es="Borde de Tajín + sal en vaso alto.">Tajín + salt rim on tall glass.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="Add lime juice, hot sauce, Worcestershire to glass." data-es="Agregar jugo de limón, salsa picante y salsa inglesa al vaso.">Add lime, hot sauce, Worcestershire.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Pour beer slowly down the side. Stir gently. Lime garnish." data-es="Verter cerveza lentamente por el lado. Mezclar suavemente. Adornar con limón.">Pour beer slowly down the side. Stir gently.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Beer got spicy and sour at the cantina." Lime (sour) + hot sauce (spicy) + beer (base). Tajín rim = the crown. Pour beer LAST.</div>
-    <button class="speak-btn" onclick="speak('Michelada. Tajín salt rim. Add lime juice, hot sauce, Worcestershire. Pour Mexican lager last, stir gently.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Beer got spicy and sour." Lime + hot sauce + beer. Pour beer LAST.' data-es='"La cerveza se puso picante y ácida." Limón + salsa + cerveza. Cerveza SIEMPRE AL FINAL.'>"Beer got spicy and sour." Beer LAST.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Signature · Citrus</div>
+  <div class="card" data-speak-en="Cantarito. Two ounces tequila. Half lime, half lemon, one ounce orange juice. Top with grapefruit soda. Three citrus, one glass." data-speak-es="Cantarito. Dos onzas tequila. Media onza limón, media onza limón amarillo, una onza jugo de naranja. Completar con refresco de toronja. Tres cítricos, un vaso.">
+    <div class="badge"><span data-en="Triple Citrus" data-es="Triple Cítrico">Triple Citrus</span></div>
     <div class="card-title">🍹 Cantarito</div>
-    <div class="card-sub">Jalisco party classic — Paloma's bigger sibling</div>
     <div class="ingredients">
-      <h4>Ingredients</h4>
+      <h4><span data-en="Ingredients" data-es="Ingredientes">Ingredients</span></h4>
       <div class="ing"><span class="ing-name">Tequila Blanco</span><span class="ing-qty">2 oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh lime juice</span><span class="ing-qty">½ oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh lemon juice</span><span class="ing-qty">½ oz</span></div>
-      <div class="ing"><span class="ing-name">Fresh orange juice</span><span class="ing-qty">1 oz</span></div>
-      <div class="ing"><span class="ing-name">Grapefruit soda</span><span class="ing-qty">top up</span></div>
-      <div class="ing"><span class="ing-name">Salt rim</span><span class="ing-qty">rim</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Lime juice" data-es="Jugo de limón verde">Lime juice</span></span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Lemon juice" data-es="Jugo de limón amarillo">Lemon juice</span></span><span class="ing-qty">½ oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Orange juice" data-es="Jugo de naranja">Orange juice</span></span><span class="ing-qty">1 oz</span></div>
+      <div class="ing"><span class="ing-name"><span data-en="Grapefruit soda" data-es="Refresco de toronja">Grapefruit soda</span></span><span class="ing-qty"><span data-en="top up" data-es="al tope">top up</span></span></div>
     </div>
     <div class="steps">
-      <h4>Method</h4>
-      <div class="step"><div class="step-n">1</div><div class="step-t">Salt rim of clay cup or highball. Fill with ice.</div></div>
-      <div class="step"><div class="step-n">2</div><div class="step-t">Add tequila + all three juices.</div></div>
-      <div class="step"><div class="step-n">3</div><div class="step-t">Top with grapefruit soda. Stir. Garnish all 3 citrus wheels.</div></div>
+      <h4><span data-en="Method" data-es="Preparación">Method</span></h4>
+      <div class="step"><div class="step-n">1</div><div class="step-t"><span data-en="Salt rim. Fill with ice." data-es="Escarchar borde. Llenar con hielo.">Salt rim. Fill with ice.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t"><span data-en="Add tequila + all three juices." data-es="Agregar tequila + los tres jugos.">Add tequila + all 3 juices.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t"><span data-en="Top with grapefruit soda. Stir lightly." data-es="Completar con refresco de toronja. Mezclar ligeramente.">Top with grapefruit soda. Stir.</span></div></div>
     </div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Paloma invited two citrus friends." L-L-O = Lime, Lemon, Orange. Paloma only has lime. Cantarito = 3 citrus + grapefruit soda.</div>
-    <button class="speak-btn" onclick="speak('Cantarito. Two ounces tequila. Half lime, half lemon, one ounce orange juice. Top with grapefruit soda. Three citrus, one glass.')">🔊 Listen</button>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Paloma invited two citrus friends." L-L-O = Lime + Lemon + Orange. Paloma only has lime.' data-es='"La Paloma invitó dos cítricos más." L-L-N = Limón + Limón amarillo + Naranja. Paloma solo lleva limón.'>"Paloma + 2 citrus friends." L-L-O.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
 </div>
 
 <!-- ========== DRINKS ========== -->
 <div id="tab-drinks" class="section">
+  <div id="listen-banner-drinks"></div>
 
-  <div class="card">
-    <div class="badge">Beer</div>
-    <div class="card-title">🍺 Mexican Lagers</div>
-    <div class="card-desc">Modelo, Corona, Pacífico. Served ice cold — "coldest beer we've had." Bucket of 6 = 300 pesos.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>MCP = Modelo, Corona, Pacífico. "My Cold Pacífico." Bucket deal: 6 beers for 300 pesos.</div>
-    <button class="speak-btn" onclick="speak('Beers. Modelo, Corona, Pacifico. Very cold. Bucket of six beers for three hundred pesos.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Beers. Modelo, Corona, Pacifico. Very cold. Bucket of six beers for three hundred pesos." data-speak-es="Cervezas. Modelo, Corona, Pacífico. Muy frías. Cubeta de seis cervezas por trescientos pesos.">
+    <div class="badge">Beer / <span data-en="Cerveza" data-es="Beer">Cerveza</span></div>
+    <div class="card-title">🍺 <span data-en="Mexican Lagers" data-es="Cervezas Mexicanas">Mexican Lagers</span></div>
+    <div class="card-desc" data-en="Modelo, Corona, Pacífico. Ice cold. Bucket of 6 = 300 pesos." data-es="Modelo, Corona, Pacífico. Bien frías. Cubeta de 6 = 300 pesos.">Modelo, Corona, Pacífico. Bucket of 6 = 300 pesos.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en="MCP = Modelo, Corona, Pacífico. Bucket deal: 6 beers for 300 pesos." data-es="MCP = Modelo, Corona, Pacífico. Oferta cubeta: 6 cervezas por 300 pesos.">MCP. Bucket: 6 for 300 pesos.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Frozen Drinks · 1oz</div>
-    <div class="card-title">🧊 Frozen Drinks</div>
-    <div class="card-desc">Blended frozen cocktails — frozen margaritas, frozen palomas, and fruit-based frozen drinks. All measured in 1oz spirit pours.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>Same cocktail base as signature drinks — just blended with ice. Fruit flavors available.</div>
-    <button class="speak-btn" onclick="speak('Frozen drinks. Blended cocktails, one ounce spirit pours. Frozen margaritas, palomas, fruit flavors.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Frozen drinks. Blended cocktails, one ounce spirit pours. Frozen margaritas, palomas, fruit flavors." data-speak-es="Bebidas congeladas. Cócteles licuados, medidas de una onza. Margaritas y palomas congeladas, sabores de fruta.">
+    <div class="badge"><span data-en="Frozen · 1oz" data-es="Congeladas · 1oz">Frozen · 1oz</span></div>
+    <div class="card-title">🧊 <span data-en="Frozen Drinks" data-es="Bebidas Congeladas">Frozen Drinks</span></div>
+    <div class="card-desc" data-en="Blended frozen cocktails — margaritas, palomas, fruit flavors. All 1oz spirit pours." data-es="Cócteles congelados licuados — margaritas, palomas, sabores de fruta. Todos en medidas de 1oz.">Blended cocktails, 1oz pours. Margaritas, palomas, fruit flavors.</div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
+  <div class="card" data-speak-en="Smoothies. Fresh blended tropical fruits. Mango, strawberry, pineapple. Non-alcoholic." data-speak-es="Smoothies. Frutas tropicales frescas licuadas. Mango, fresa, piña. Sin alcohol.">
     <div class="badge">Smoothies</div>
-    <div class="card-title">🥤 Fresh Smoothies</div>
-    <div class="card-desc">Fresh blended tropical fruit smoothies — mango, strawberry, pineapple. Non-alcoholic, great for designated drivers or kids.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The sober duck option." Fresh tropical fruits, blended to order. Good upsell for the whole table.</div>
-    <button class="speak-btn" onclick="speak('Smoothies. Fresh blended tropical fruits. Mango, strawberry, pineapple. Non-alcoholic.')">🔊 Listen</button>
+    <div class="card-title">🥤 Smoothies</div>
+    <div class="card-desc" data-en="Fresh blended tropical fruit smoothies — mango, strawberry, pineapple. Non-alcoholic." data-es="Smoothies de frutas tropicales frescas — mango, fresa, piña. Sin alcohol.">Mango, strawberry, pineapple. Non-alcoholic.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"The sober duck option." Great upsell for non-drinkers at the table.' data-es='"La opción del pato sobrio." Excelente para quien no toma en la mesa.'>"The sober duck option."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Wine · 6oz pours</div>
-    <div class="card-title">🍷 Wine</div>
-    <div class="card-desc">Red and white wine by the glass in 6oz pours. Note the pour size when guests ask for "a glass."</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Six ounces — smaller than usual." Always confirm: 6oz pour, not a full restaurant pour. Good for food pairing.</div>
-    <button class="speak-btn" onclick="speak('Wine. Six ounce pours. Red and white. Smaller than a standard restaurant glass.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Wine. Six ounce pours. Red and white. Smaller than a standard restaurant glass." data-speak-es="Vino. Copas de seis onzas. Tinto y blanco. Más pequeño que una copa estándar de restaurante.">
+    <div class="badge"><span data-en="Wine · 6oz" data-es="Vino · 6oz">Wine · 6oz</span></div>
+    <div class="card-title">🍷 <span data-en="Wine" data-es="Vino">Wine</span></div>
+    <div class="card-desc" data-en="Red and white wine by the glass in 6oz pours." data-es="Vino tinto y blanco en copas de 6oz.">Red and white wine, 6oz pours.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Six ounces — smaller than usual." Always mention the pour size.' data-es='"Seis onzas — más pequeño de lo normal." Siempre menciona el tamaño de la copa.'>"Six ounces." Mention the pour size.</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Spirits · 1oz pours</div>
-    <div class="card-title">🥃 Spirits</div>
-    <div class="card-desc">Tequila, Mezcal, Rum, Vodka, Gin, Whisky — all in 1oz measures. Agave spirits (tequila + mezcal) are the house specialty.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"One ounce, six options." The Duck runs on agave — tequila and mezcal are the stars of every cocktail.</div>
-    <button class="speak-btn" onclick="speak('Spirits. One ounce pours. Tequila, mezcal, rum, vodka, gin, whisky. Agave spirits are the house specialty.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Spirits. One ounce pours. Tequila, mezcal, rum, vodka, gin, whisky. Agave spirits are the house specialty." data-speak-es="Destilados. Medidas de una onza. Tequila, mezcal, ron, vodka, ginebra, whisky. Los agaves son la especialidad de la casa.">
+    <div class="badge"><span data-en="Spirits · 1oz" data-es="Destilados · 1oz">Spirits · 1oz</span></div>
+    <div class="card-title">🥃 <span data-en="Spirits" data-es="Destilados">Spirits</span></div>
+    <div class="card-desc" data-en="Tequila, Mezcal, Rum, Vodka, Gin, Whisky — all 1oz measures." data-es="Tequila, Mezcal, Ron, Vodka, Ginebra, Whisky — todos en medidas de 1oz.">Tequila, Mezcal, Rum, Vodka, Gin, Whisky — 1oz each.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"One ounce, six options." Tequila & mezcal are the house stars.' data-es='"Una onza, seis opciones." Tequila y mezcal son las estrellas de la casa.'>"One ounce, six options."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Liqueurs · 1oz pours</div>
-    <div class="card-title">🍊 Liqueurs</div>
-    <div class="card-desc">Triple Sec, Cointreau, Kahlúa, Amaretto and more in 1oz pours. Triple sec is in every margarita. Kahlúa for after-dinner.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"The flavour bridges." Triple sec = citrus bridge in margaritas. Kahlúa = coffee-sweet after-dinner bridge.</div>
-    <button class="speak-btn" onclick="speak('Liqueurs. One ounce pours. Triple sec for margaritas. Kahlua for after dinner. Flavor bridges in cocktails.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Liqueurs. One ounce pours. Triple sec for margaritas. Kahlua for after dinner. Flavor bridges in cocktails." data-speak-es="Licores. Medidas de una onza. Triple sec para margaritas. Kahlúa para después de cenar. Puentes de sabor en cócteles.">
+    <div class="badge"><span data-en="Liqueurs · 1oz" data-es="Licores · 1oz">Liqueurs · 1oz</span></div>
+    <div class="card-title">🍊 <span data-en="Liqueurs" data-es="Licores">Liqueurs</span></div>
+    <div class="card-desc" data-en="Triple Sec, Cointreau, Kahlúa, Amaretto and more. 1oz pours." data-es="Triple Sec, Cointreau, Kahlúa, Amaretto y más. Medidas de 1oz.">Triple Sec, Cointreau, Kahlúa, Amaretto — 1oz pours.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"The flavour bridges." Triple sec = margaritas. Kahlúa = after dinner.' data-es='"Los puentes de sabor." Triple sec = margaritas. Kahlúa = postre.'>"The flavour bridges."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-  <div class="card">
-    <div class="badge">Soft Drinks</div>
-    <div class="card-title">🥤 Soft Drinks</div>
-    <div class="card-desc">Mexican sodas including Jarritos (grapefruit, tamarind, mandarin), Coke, water. Grapefruit Jarritos = the Paloma mixer.</div>
-    <div class="mnemonic"><strong>🧠 Mnemonic</strong>"Jarritos = the MVP mixer." Grapefruit Jarritos + 2oz tequila = instant Paloma. Know your sodas.</div>
-    <button class="speak-btn" onclick="speak('Soft drinks. Mexican sodas. Jarritos grapefruit is the paloma mixer. Also tamarind and mandarin flavors.')">🔊 Listen</button>
+  <div class="card" data-speak-en="Soft drinks. Mexican sodas. Jarritos grapefruit is the paloma mixer. Also tamarind and mandarin flavors." data-speak-es="Refrescos. Sodas mexicanas. Jarritos de toronja es el mezclador para palomas. También sabor tamarindo y mandarina.">
+    <div class="badge"><span data-en="Soft Drinks" data-es="Refrescos">Soft Drinks</span></div>
+    <div class="card-title">🥤 <span data-en="Soft Drinks" data-es="Refrescos">Soft Drinks</span></div>
+    <div class="card-desc" data-en="Mexican sodas (Jarritos), Coke, water. Grapefruit Jarritos = the Paloma mixer." data-es="Sodas mexicanas (Jarritos), Coca-Cola, agua. Jarritos de toronja = mezclador de Paloma.">Jarritos (grapefruit, tamarind, mandarin), Coke, water.</div>
+    <div class="mnemonic"><strong>🧠</strong><span data-en='"Jarritos = the MVP mixer." Grapefruit Jarritos + 2oz tequila = instant Paloma.' data-es='"Jarritos = el mezclador estrella." Jarritos toronja + 2oz tequila = Paloma instantánea.'>"Jarritos = MVP mixer."</span></div>
+    <button class="speak-btn" onclick="speakCard(this)">🔊 <span data-en="Listen" data-es="Escuchar">Listen</span></button>
   </div>
 
-</div>
-
-<!-- ========== FLASHCARDS ========== -->
-<div id="tab-flashcards" class="section">
-  <div class="fc-nav">
-    <button onclick="fcPrev()">← Back</button>
-    <span class="fc-counter" id="fc-counter">1 / 20</span>
-    <button onclick="fcNext()">Next →</button>
-  </div>
-  <div class="fc-wrap" onclick="flipCard()">
-    <div class="fc" id="flashcard">
-      <div class="fc-front">
-        <div class="fc-emoji" id="fc-emoji">🦐</div>
-        <div class="fc-q" id="fc-front">—</div>
-        <div class="fc-tap">Tap to reveal</div>
-      </div>
-      <div class="fc-back">
-        <div class="fc-a" id="fc-back">—</div>
-      </div>
-    </div>
-  </div>
-  <button class="shuffle-btn" onclick="fcShuffle()">🔀 Shuffle Cards</button>
 </div>
 
 <!-- ========== QUIZ ========== -->
 <div id="tab-quiz" class="section">
   <div class="quiz-meta">
-    <span>Score: <span class="quiz-val" id="score-val">0</span></span>
+    <span><span data-en="Score:" data-es="Puntos:">Score:</span> <span class="quiz-val" id="score-val">0</span></span>
     <span>Q: <span class="quiz-val" id="q-val">1</span> / 15</span>
   </div>
   <div class="quiz-card">
-    <div class="quiz-q" id="quiz-q">Loading...</div>
+    <div class="quiz-q" id="quiz-q">...</div>
     <div class="quiz-hint" id="quiz-hint"></div>
     <div class="quiz-opts" id="quiz-opts"></div>
   </div>
-  <button class="action-btn" id="quiz-next" onclick="nextQuestion()" style="display:none">Next →</button>
-  <button class="reset-btn" onclick="resetQuiz()">🔄 Restart Quiz</button>
+  <button class="action-btn" id="quiz-next" onclick="nextQuestion()" style="display:none"><span data-en="Next →" data-es="Siguiente →">Next →</span></button>
+  <button class="reset-btn" onclick="resetQuiz()">🔄 <span data-en="Restart Quiz" data-es="Reiniciar Quiz">Restart Quiz</span></button>
 </div>
 
 <script>
+// ── LANGUAGE ──
+let lang = 'en';
+const MODES = ['read','listen'];
+const sessionMode = MODES[Math.floor(Math.random() * MODES.length)];
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-es').classList.toggle('active', l==='es');
+  // Update all data-en/data-es elements
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = l==='en' ? el.dataset.en : el.dataset.es;
+  });
+  // Update header sub
+  document.getElementById('header-sub').textContent = l==='en'
+    ? 'Nuevo Vallarta · Learn the menu fast'
+    : 'Nuevo Vallarta · Aprende el menú rápido';
+  // Update mode badge
+  updateModeBadge();
+  // Reapply listen mode banners
+  if (sessionMode==='listen') applyListenMode();
+  // Reload quiz question text
+  loadQ();
+}
+
+// ── MODE ──
+function updateModeBadge() {
+  const badge = document.getElementById('mode-badge');
+  if (sessionMode==='listen') {
+    badge.textContent = lang==='en' ? '🔊 Listen Mode' : '🔊 Modo Escucha';
+  } else {
+    badge.textContent = lang==='en' ? '📖 Read Mode' : '📖 Modo Lectura';
+  }
+}
+
+function applyListenMode() {
+  ['food','cocktails','drinks'].forEach(tab => {
+    const banner = document.getElementById('listen-banner-'+tab);
+    if (banner) {
+      banner.innerHTML = `<div class="listen-banner">🔊 ${lang==='en'
+        ? 'Listen Mode — audio plays automatically as you scroll each card'
+        : 'Modo Escucha — el audio se reproduce automáticamente al ver cada tarjeta'}</div>`;
+    }
+  });
+  // Add auto-play on scroll for cards
+  setupAutoPlay();
+}
+
+function setupAutoPlay() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const card = entry.target;
+        const txt = lang==='en' ? card.dataset.speakEn : card.dataset.speakEs;
+        if (txt) {
+          card.classList.add('listening');
+          setTimeout(() => {
+            speakText(txt);
+            setTimeout(() => card.classList.remove('listening'), 3000);
+          }, 400);
+        }
+      }
+    });
+  }, { threshold: 0.7 });
+
+  document.querySelectorAll('.card').forEach(card => observer.observe(card));
+}
+
+// ── SPEAK ──
+function speakText(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.88;
+  u.lang = lang === 'es' ? 'es-MX' : 'en-US';
+  window.speechSynthesis.speak(u);
+}
+
+function speakCard(btn) {
+  const card = btn.closest('.card');
+  const txt = lang==='en' ? card.dataset.speakEn : card.dataset.speakEs;
+  speakText(txt);
+  btn.classList.add('playing');
+  setTimeout(() => btn.classList.remove('playing'), 3000);
+}
+
 // ── TAB SWITCHING ──
 function showTab(name, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('visible');
+  document.getElementById('tab-'+name).classList.add('visible');
   el.classList.add('active');
 }
 
-// ── SPEAK ──
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.88; u.lang = 'en-US';
-  window.speechSynthesis.speak(u);
-}
-
-// ── FLASHCARD DATA ──
-const cards = [
-  // FOOD
-  { emoji:'🍟', q:'French Fries', a:'220g, crispy, salt & pepper. Nothing else — the naked duck.' },
-  { emoji:'🧀', q:'Loaded Fries', a:'220g fries + 100g cheese + 50g bacon + chives. Cheese = double the bacon.' },
-  { emoji:'🫘', q:'Nachos — what are the 5 toppings?', a:'B-J-G-S-S: Beans, Jalapeños, Guac, Sour cream, Salsa. Proteins: Steak/Chicken 150g · Bacon 80g.' },
-  { emoji:'🍔', q:'Beef Sliders', a:'3 juicy 70g patties, American cheese, fresh pickles. Always 3, always 70g each.' },
-  { emoji:'🦐', q:'Tempura Shrimp', a:'250g shrimp in signature light crispy tempura batter. Same batter as onion rings.' },
-  { emoji:'🌶️', q:'Aguachile', a:'250g shrimp cured RAW in lime juice + chili + cilantro + onion. Ask spice level! Agua = water, Chile = chili.' },
-  { emoji:'🦐🥓', q:'Bacon-Wrapped Shrimp — what makes it unique?', a:'300g jumbo shrimp in bacon, SERVED IN A MARGARITA GLASS with cocktail sauce + 150g fries. #1 dish. "Deadly good!"' },
-  { emoji:'🐟', q:'Fish & Chips — what fish?', a:'MAHI MAHI — Pacific fish, not cod. House-made tartar sauce. Called "outstanding" in reviews.' },
-  { emoji:'🌮', q:'Shrimp Tacos', a:'3 tacos, 150g tempura shrimp, corn tortillas, coleslaw + Mexican sauce + tartar sauce.' },
-  { emoji:'🍔', q:'Tempura Chicken Ranch Burger', a:'150g crispy tempura chicken breast + 30g bacon + cheese + ranch on house-made bun + 150g fries.' },
-  { emoji:'🥪', q:'Club Sandwich — 3 meats in order', a:'Chicken 150g → Turkey ham 80g → Bacon 50g. Toasted bread, American cheese, veggies, 150g fries.' },
-  { emoji:'🍖', q:'BBQ Rib Sandwich — what sides?', a:'160g rib meat on toasted bun + BBQ sauce. Only dish that offers fries OR potato salad.' },
-  { emoji:'🐟', q:'Seared Tuna', a:'Fresh Pacific tuna, lightly seared. A reviewer called it "out of this world." The quiet superstar.' },
-  { emoji:'🍟🧀', q:'Poutine', a:'Canadian dish: fries + cheese curds + gravy. The wild card on a Mexican menu. Great conversation starter.' },
-  // COCKTAILS
-  { emoji:'🥃', q:'Classic Margarita — recipe rule', a:'2oz Tequila + 1oz Lime + 1oz Triple Sec. "2-1-1 shake till done." Salt rim. Strain into rocks glass.' },
-  { emoji:'🍊', q:'Paloma — what makes it fizzy?', a:'Grapefruit soda (Jarritos). 2oz tequila + ½oz lime + top grapefruit soda. Highball glass, salt rim. "Dove on grapefruit sky."' },
-  { emoji:'🌿', q:'Mezcal Negroni — shake or stir?', a:'STIR — never shake. Equal parts 1oz each: Mezcal + Campari + Sweet Vermouth. Orange peel twist. MCV.' },
-  { emoji:'🍺', q:'Michelada — build order', a:'Tajín rim → lime + hot sauce + Worcestershire → beer last. Stir gently. Mexico\'s spicy beer cocktail.' },
-  { emoji:'🍹', q:'Cantarito vs Paloma — difference?', a:'Cantarito adds lemon AND orange juice. "L-L-O" = Lime + Lemon + Orange + grapefruit soda. Paloma only has lime.' },
-  { emoji:'🍷', q:'Wine pour size at the Duck?', a:'6oz pours — smaller than a standard restaurant glass. Mention this when guests ask for "a glass of wine."' },
-];
-
-let fcOrder = [...Array(cards.length).keys()];
-let fcIndex = 0;
-
-function renderFC() {
-  const c = cards[fcOrder[fcIndex]];
-  document.getElementById('fc-emoji').textContent = c.emoji;
-  document.getElementById('fc-front').textContent = c.q;
-  document.getElementById('fc-back').textContent = c.a;
-  document.getElementById('fc-counter').textContent = `${fcIndex+1} / ${cards.length}`;
-  document.getElementById('flashcard').classList.remove('flipped');
-}
-function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
-function fcNext() { fcIndex = (fcIndex+1) % cards.length; renderFC(); }
-function fcPrev() { fcIndex = (fcIndex-1+cards.length) % cards.length; renderFC(); }
-function fcShuffle() { fcOrder.sort(()=>Math.random()-0.5); fcIndex=0; renderFC(); }
-renderFC();
-
-// ── QUIZ DATA ──
-const quiz = [
-  { q:'What weight is the Bacon-Wrapped Shrimp?', hint:'The #1 dish', correct:'300g', opts:['150g','250g','300g','400g'] },
-  { q:'Bacon-Wrapped Shrimp is served in what?', hint:'Unexpected vessel!', correct:'A margarita glass', opts:['A plate','A basket','A margarita glass','A clay bowl'] },
-  { q:'What fish is used in Fish & Chips?', hint:'Says it twice...', correct:'Mahi Mahi', opts:['Cod','Tilapia','Mahi Mahi','Halibut'] },
-  { q:'Aguachile shrimp is cooked how?', hint:'Agua = water, Chile = chili', correct:'Raw-cured in lime juice', opts:['Grilled','Fried','Steamed','Raw-cured in lime juice'] },
-  { q:'How many tacos in the Shrimp Tacos order?', hint:'Always the same number', correct:'3', opts:['2','3','4','5'] },
-  { q:'Classic Margarita ratio — tequila : lime : triple sec?', hint:'"2-1-1 shake till done"', correct:'2 : 1 : 1', opts:['1:1:1','2:1:1','3:1:1','2:2:1'] },
-  { q:'Should you shake or stir a Mezcal Negroni?', hint:'Spirit-only rule', correct:'Stir — never shake', opts:['Shake hard','Blend it','Stir — never shake','Pour straight'] },
-  { q:'The Paloma uses which soda?', hint:'"Dove flies on __ sky"', correct:'Grapefruit soda', opts:['Club soda','Lemon soda','Grapefruit soda','Orange soda'] },
-  { q:'BBQ Rib Sandwich — what alternative side does it offer?', hint:'Only dish with this option', correct:'Potato salad', opts:['Coleslaw','Garden salad','Potato salad','Onion rings'] },
-  { q:'Nachos protein — how much bacon can you add?', hint:'Smaller than steak/chicken', correct:'80g', opts:['50g','80g','100g','150g'] },
-  { q:'How many sliders in the Beef Sliders?', hint:'Same number as shrimp tacos', correct:'3', opts:['2','3','4','6'] },
-  { q:'Wine is served in what pour size?', hint:'Smaller than a standard restaurant glass', correct:'6 oz', opts:['4 oz','5 oz','6 oz','8 oz'] },
-  { q:'Cantarito has how many citrus juices?', hint:'L-L-O rule', correct:'3 (lime, lemon, orange)', opts:['1 (lime)','2 (lime + orange)','3 (lime, lemon, orange)','4'] },
-  { q:'Club Sandwich — which meat is 80g?', hint:'Between chicken (150g) and bacon (50g)', correct:'Turkey ham', opts:['Chicken','Beef','Turkey ham','Prosciutto'] },
-  { q:'Beer bucket deal at the Duck?', hint:'6 cold ones', correct:'6 beers for 300 pesos', opts:['4 for 200 pesos','5 for 250 pesos','6 beers for 300 pesos','6 for 400 pesos'] },
+// ── QUIZ ──
+const quizData = [
+  { en:{ q:'What weight is the Bacon-Wrapped Shrimp?', hint:'The #1 dish', correct:'300g', opts:['150g','250g','300g','400g'] },
+    es:{ q:'¿Cuánto pesan los Camarones Envueltos en Tocino?', hint:'El platillo #1', correct:'300g', opts:['150g','250g','300g','400g'] } },
+  { en:{ q:'Bacon-Wrapped Shrimp is served in what?', hint:'Unexpected vessel!', correct:'A margarita glass', opts:['A plate','A basket','A margarita glass','A clay bowl'] },
+    es:{ q:'¿En qué se sirven los Camarones Envueltos en Tocino?', hint:'¡Recipiente inesperado!', correct:'Copa de margarita', opts:['Un plato','Una canasta','Copa de margarita','Un tazón de barro'] } },
+  { en:{ q:'What fish is used in Fish & Chips?', hint:'Says it twice...', correct:'Mahi Mahi', opts:['Cod','Tilapia','Mahi Mahi','Halibut'] },
+    es:{ q:'¿Qué pescado se usa en el Fish & Chips?', hint:'Se dice dos veces...', correct:'Mahi Mahi', opts:['Bacalao','Tilapia','Mahi Mahi','Halibut'] } },
+  { en:{ q:'Aguachile shrimp is cooked how?', hint:'Agua = water, Chile = chili', correct:'Raw-cured in lime juice', opts:['Grilled','Fried','Steamed','Raw-cured in lime juice'] },
+    es:{ q:'¿Cómo se "cocina" el camarón en el aguachile?', hint:'Agua = agua, Chile = chile', correct:'Crudo curado en limón', opts:['A la parrilla','Frito','Al vapor','Crudo curado en limón'] } },
+  { en:{ q:'Classic Margarita ratio?', hint:'"2-1-1 shake till done"', correct:'2oz tequila : 1oz lime : 1oz triple sec', opts:['1:1:1','2:1:1','3:1:1','2:2:1'] },
+    es:{ q:'¿Cuál es la proporción de la Margarita Clásica?', hint:'"2-1-1 agitar y listo"', correct:'2oz tequila : 1oz limón : 1oz triple sec', opts:['1:1:1','2:1:1','3:1:1','2:2:1'] } },
+  { en:{ q:'Should you shake or stir a Mezcal Negroni?', hint:'Spirit-only rule', correct:'Stir — never shake', opts:['Shake hard','Blend it','Stir — never shake','Pour straight'] },
+    es:{ q:'¿Agitas o revuelves un Negroni de Mezcal?', hint:'Regla de cócteles solo de destilados', correct:'Revolver — nunca agitar', opts:['Agitar fuerte','Licuar','Revolver — nunca agitar','Servir directo'] } },
+  { en:{ q:'The Paloma uses which soda?', hint:'"Dove flies on __ sky"', correct:'Grapefruit soda', opts:['Club soda','Lemon soda','Grapefruit soda','Orange soda'] },
+    es:{ q:'¿Qué refresco lleva la Paloma?', hint:'"La paloma vuela en cielo de __"', correct:'Refresco de toronja', opts:['Agua mineral','Refresco de limón','Refresco de toronja','Refresco de naranja'] } },
+  { en:{ q:'BBQ Rib Sandwich — what alternative side?', hint:'Only dish with this option', correct:'Potato salad', opts:['Coleslaw','Garden salad','Potato salad','Onion rings'] },
+    es:{ q:'Sándwich de Costilla BBQ — ¿qué guarnición alternativa ofrece?', hint:'Único platillo con esta opción', correct:'Ensalada de papa', opts:['Ensalada de col','Ensalada verde','Ensalada de papa','Aros de cebolla'] } },
+  { en:{ q:'How many sliders in the Beef Sliders?', hint:'"3 little ducks"', correct:'3', opts:['2','3','4','6'] },
+    es:{ q:'¿Cuántos sliders trae la orden?', hint:'"3 patitos"', correct:'3', opts:['2','3','4','6'] } },
+  { en:{ q:'Wine pour size at the Duck?', hint:'Smaller than usual', correct:'6 oz', opts:['4 oz','5 oz','6 oz','8 oz'] },
+    es:{ q:'¿Qué tamaño de copa se sirve el vino?', hint:'Más pequeño de lo normal', correct:'6 oz', opts:['4 oz','5 oz','6 oz','8 oz'] } },
+  { en:{ q:'Cantarito has how many citrus juices?', hint:'L-L-O rule', correct:'3 (lime, lemon, orange)', opts:['1','2','3 (lime, lemon, orange)','4'] },
+    es:{ q:'¿Cuántos jugos cítricos lleva el Cantarito?', hint:'Regla L-L-N', correct:'3 (limón, limón amarillo, naranja)', opts:['1','2','3 (limón, limón amarillo, naranja)','4'] } },
+  { en:{ q:'Club Sandwich — which meat is 80g?', hint:'Between chicken (150g) and bacon (50g)', correct:'Turkey ham', opts:['Chicken','Beef','Turkey ham','Prosciutto'] },
+    es:{ q:'Club Sándwich — ¿qué carne pesa 80g?', hint:'Entre el pollo (150g) y el tocino (50g)', correct:'Jamón de pavo', opts:['Pollo','Res','Jamón de pavo','Prosciutto'] } },
+  { en:{ q:'Beer bucket deal at the Duck?', hint:'6 cold ones', correct:'6 beers for 300 pesos', opts:['4 for 200','5 for 250','6 beers for 300 pesos','6 for 400'] },
+    es:{ q:'¿Cuál es la oferta de cubeta de cerveza?', hint:'6 bien frías', correct:'6 cervezas por 300 pesos', opts:['4 por 200','5 por 250','6 cervezas por 300 pesos','6 por 400'] } },
+  { en:{ q:'Nachos protein add-ons — how much bacon?', hint:'Half the weight of steak/chicken', correct:'80g', opts:['50g','80g','100g','150g'] },
+    es:{ q:'Nachos — ¿cuánto tocino puedes agregar?', hint:'La mitad del peso de bistec/pollo', correct:'80g', opts:['50g','80g','100g','150g'] } },
+  { en:{ q:'In Michelada, what goes in LAST?', hint:'It would go flat otherwise', correct:'The beer', opts:['Lime juice','Hot sauce','Worcestershire','The beer'] },
+    es:{ q:'En la Michelada, ¿qué se agrega AL FINAL?', hint:'Si no, se aplanaría', correct:'La cerveza', opts:['Jugo de limón','Salsa picante','Salsa inglesa','La cerveza'] } },
 ];
 
 let qIndex = 0, score = 0, answered = false;
 
 function loadQ() {
-  const q = quiz[qIndex];
-  document.getElementById('quiz-q').textContent = q.q;
-  document.getElementById('quiz-hint').textContent = `💡 ${q.hint}`;
+  if (qIndex >= quizData.length) return;
+  const item = quizData[qIndex][lang] || quizData[qIndex]['en'];
+  document.getElementById('quiz-q').textContent = item.q;
+  document.getElementById('quiz-hint').textContent = '💡 ' + item.hint;
   document.getElementById('score-val').textContent = score;
   document.getElementById('q-val').textContent = qIndex + 1;
   document.getElementById('quiz-next').style.display = 'none';
   answered = false;
   const opts = document.getElementById('quiz-opts');
   opts.innerHTML = '';
-  [...q.opts].sort(()=>Math.random()-0.5).forEach(o => {
+  [...item.opts].sort(()=>Math.random()-0.5).forEach(o => {
     const b = document.createElement('button');
     b.className = 'quiz-opt'; b.textContent = o;
-    b.onclick = () => answer(o, q.correct);
+    b.onclick = () => answer(o, item.correct);
     opts.appendChild(b);
   });
 }
@@ -697,25 +718,24 @@ function answer(chosen, correct) {
 
 function nextQuestion() {
   qIndex++;
-  if (qIndex >= quiz.length) {
-    document.querySelector('.quiz-card').innerHTML = `
-      <div class="quiz-q" style="margin-bottom:12px">🎉 Done! ${score}/${quiz.length}</div>
-      <div class="quiz-hint">${score>=13?'🦆⭐ Duck Master!':score>=9?'🦆 Good Duck!':'🦆 Keep training!'}</div>
-    `;
+  if (qIndex >= quizData.length) {
+    const fin = lang==='en'
+      ? '🎉 Done! ' + score + '/' + quizData.length + ' — ' + (score>=13?'🦆⭐ Duck Master!':score>=9?'🦆 Good Duck!':'🦆 Keep training!')
+      : '🎉 ¡Listo! ' + score + '/' + quizData.length + ' — ' + (score>=13?'🦆⭐ ¡Maestro del Pato!':score>=9?'🦆 ¡Buen Pato!':'🦆 ¡Sigue practicando!');
+    document.querySelector('.quiz-card').innerHTML = '<div class="quiz-q" style="margin-bottom:12px">' + fin + '</div>';
     document.getElementById('quiz-next').style.display = 'none';
   } else { loadQ(); }
 }
 
 function resetQuiz() {
   qIndex = 0; score = 0;
-  document.querySelector('.quiz-card').innerHTML = `
-    <div class="quiz-q" id="quiz-q"></div>
-    <div class="quiz-hint" id="quiz-hint"></div>
-    <div class="quiz-opts" id="quiz-opts"></div>
-  `;
+  document.querySelector('.quiz-card').innerHTML = '<div class="quiz-q" id="quiz-q"></div><div class="quiz-hint" id="quiz-hint"></div><div class="quiz-opts" id="quiz-opts"></div>';
   loadQ();
 }
 
+// INIT
+updateModeBadge();
+if (sessionMode === 'listen') applyListenMode();
 loadQ();
 </script>
 </body>
